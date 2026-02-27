@@ -268,7 +268,7 @@ type GetUserAnswersRes struct {
 }
 
 type LoginReq struct {
-	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -333,8 +333,9 @@ type QuestionListRes struct {
 }
 
 type RegisterReq struct {
-	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
+	Code     string `json:"code"`
 	Role     int    `json:"role,options=1|2"` // 1:学生 2:教师
 }
 
@@ -351,6 +352,13 @@ type RemoveExamQuestionReq struct {
 type SaveAnswerSnapshotReq struct {
 	RecordId int64        `json:"record_id"`
 	Answers  []AnswerItem `json:"answers"`
+}
+
+type SendVerifyCodeReq struct {
+	Email string `json:"email"`
+}
+
+type SendVerifyCodeRes struct {
 }
 
 type StartExamReq struct {
@@ -430,7 +438,7 @@ type UserAnswerItem struct {
 
 type UserInfoRes struct {
 	UserId   int64  `json:"user_id"`
-	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
 	Role     int    `json:"role"`

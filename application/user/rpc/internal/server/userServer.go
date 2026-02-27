@@ -41,8 +41,14 @@ func (s *UserServer) FindById(ctx context.Context, in *pb.FindByIdReq) (*pb.Find
 	return l.FindById(in)
 }
 
-// 根据手机号获取用户信息
-func (s *UserServer) FindByMobile(ctx context.Context, in *pb.FindByMobileReq) (*pb.FindByMobileRes, error) {
-	l := logic.NewFindByMobileLogic(ctx, s.svcCtx)
-	return l.FindByMobile(in)
+// 根据邮箱获取用户信息
+func (s *UserServer) FindByEmail(ctx context.Context, in *pb.FindByEmailReq) (*pb.FindByEmailRes, error) {
+	l := logic.NewFindByEmailLogic(ctx, s.svcCtx)
+	return l.FindByEmail(in)
+}
+
+// 发送验证码
+func (s *UserServer) SendVerifyCode(ctx context.Context, in *pb.SendVerifyCodeReq) (*pb.SendVerifyCodeRes, error) {
+	l := logic.NewSendVerifyCodeLogic(ctx, s.svcCtx)
+	return l.SendVerifyCode(in)
 }

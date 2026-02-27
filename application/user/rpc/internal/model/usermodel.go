@@ -1,6 +1,7 @@
 package model
 
 import (
+
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -25,3 +26,5 @@ func NewUserModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) Us
 		defaultUserModel: newUserModel(conn, c, opts...),
 	}
 }
+
+

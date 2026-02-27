@@ -11,9 +11,16 @@ info (
 type Empty {}
 
 // ---------- 用户 ----------
+type SendVerifyCodeReq {
+	Email string `json:"email"`
+}
+
+type SendVerifyCodeRes {}
+
 type RegisterReq {
-	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
+	Code     string `json:"code"`
 	Role     int    `json:"role,options=1|2"` // 1:学生 2:教师
 }
 
@@ -23,7 +30,7 @@ type RegisterRes {
 }
 
 type LoginReq {
-	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -35,7 +42,7 @@ type LoginRes {
 
 type UserInfoRes {
 	UserId   int64  `json:"user_id"`
-	Mobile   string `json:"mobile"`
+	Email    string `json:"email"`
 	Nickname string `json:"nickname"`
 	Avatar   string `json:"avatar"`
 	Role     int    `json:"role"`
@@ -457,6 +464,10 @@ type GetAiTaskStatusRes {
 	group:  user
 )
 service applet-api {
+	@doc "发送验证码"
+	@handler SendVerifyCode
+	post /user/verify-code (SendVerifyCodeReq) returns (SendVerifyCodeRes)
+
 	@doc "用户注册"
 	@handler Register
 	post /user/register (RegisterReq) returns (RegisterRes)

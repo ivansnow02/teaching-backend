@@ -24,15 +24,15 @@ var (
 	userRowsExpectAutoSet   = strings.Join(stringx.Remove(userFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	userRowsWithPlaceHolder = strings.Join(stringx.Remove(userFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cacheTeachingUserUserIdPrefix     = "cache:teachingUser:user:id:"
-	cacheTeachingUserUserMobilePrefix = "cache:teachingUser:user:mobile:"
+	cacheUserIdPrefix    = "cache:user:id:"
+	cacheUserEmailPrefix = "cache:user:email:"
 )
 
 type (
 	userModel interface {
 		Insert(ctx context.Context, data *User) (sql.Result, error)
 		FindOne(ctx context.Context, id uint64) (*User, error)
-		FindOneByMobile(ctx context.Context, mobile string) (*User, error)
+		FindOneByEmail(ctx context.Context, email string) (*User, error)
 		Update(ctx context.Context, data *User) error
 		Delete(ctx context.Context, id uint64) error
 	}
@@ -44,7 +44,7 @@ type (
 
 	User struct {
 		Id         uint64       `db:"id"`          // 主键ID
-		Mobile     string       `db:"mobile"`      // 手机号
+		Email      string       `db:"email"`       // 邮箱
 		Password   string       `db:"password"`    // 密码(加密)
 		Nickname   string       `db:"nickname"`    // 昵称
 		Avatar     string       `db:"avatar"`      // 头像URL
@@ -69,19 +69,19 @@ func (m *defaultUserModel) Delete(ctx context.Context, id uint64) error {
 		return err
 	}
 
-	teachingUserUserIdKey := fmt.Sprintf("%s%v", cacheTeachingUserUserIdPrefix, id)
-	teachingUserUserMobileKey := fmt.Sprintf("%s%v", cacheTeachingUserUserMobilePrefix, data.Mobile)
+	userEmailKey := fmt.Sprintf("%s%v", cacheUserEmailPrefix, data.Email)
+	userIdKey := fmt.Sprintf("%s%v", cacheUserIdPrefix, id)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
 		return conn.ExecCtx(ctx, query, id)
-	}, teachingUserUserIdKey, teachingUserUserMobileKey)
+	}, userEmailKey, userIdKey)
 	return err
 }
 
 func (m *defaultUserModel) FindOne(ctx context.Context, id uint64) (*User, error) {
-	teachingUserUserIdKey := fmt.Sprintf("%s%v", cacheTeachingUserUserIdPrefix, id)
+	userIdKey := fmt.Sprintf("%s%v", cacheUserIdPrefix, id)
 	var resp User
-	err := m.QueryRowCtx(ctx, &resp, teachingUserUserIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
+	err := m.QueryRowCtx(ctx, &resp, userIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", userRows, m.table)
 		return conn.QueryRowCtx(ctx, v, query, id)
 	})
@@ -95,12 +95,12 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id uint64) (*User, error
 	}
 }
 
-func (m *defaultUserModel) FindOneByMobile(ctx context.Context, mobile string) (*User, error) {
-	teachingUserUserMobileKey := fmt.Sprintf("%s%v", cacheTeachingUserUserMobilePrefix, mobile)
+func (m *defaultUserModel) FindOneByEmail(ctx context.Context, email string) (*User, error) {
+	userEmailKey := fmt.Sprintf("%s%v", cacheUserEmailPrefix, email)
 	var resp User
-	err := m.QueryRowIndexCtx(ctx, &resp, teachingUserUserMobileKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
-		query := fmt.Sprintf("select %s from %s where `mobile` = ? limit 1", userRows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, mobile); err != nil {
+	err := m.QueryRowIndexCtx(ctx, &resp, userEmailKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+		query := fmt.Sprintf("select %s from %s where `email` = ? limit 1", userRows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, email); err != nil {
 			return nil, err
 		}
 		return resp.Id, nil
@@ -116,12 +116,12 @@ func (m *defaultUserModel) FindOneByMobile(ctx context.Context, mobile string) (
 }
 
 func (m *defaultUserModel) Insert(ctx context.Context, data *User) (sql.Result, error) {
-	teachingUserUserIdKey := fmt.Sprintf("%s%v", cacheTeachingUserUserIdPrefix, data.Id)
-	teachingUserUserMobileKey := fmt.Sprintf("%s%v", cacheTeachingUserUserMobilePrefix, data.Mobile)
+	userEmailKey := fmt.Sprintf("%s%v", cacheUserEmailPrefix, data.Email)
+	userIdKey := fmt.Sprintf("%s%v", cacheUserIdPrefix, data.Id)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Mobile, data.Password, data.Nickname, data.Avatar, data.Role, data.Status, data.DeletedAt)
-	}, teachingUserUserIdKey, teachingUserUserMobileKey)
+		return conn.ExecCtx(ctx, query, data.Email, data.Password, data.Nickname, data.Avatar, data.Role, data.Status, data.DeletedAt)
+	}, userEmailKey, userIdKey)
 	return ret, err
 }
 
@@ -131,17 +131,17 @@ func (m *defaultUserModel) Update(ctx context.Context, newData *User) error {
 		return err
 	}
 
-	teachingUserUserIdKey := fmt.Sprintf("%s%v", cacheTeachingUserUserIdPrefix, data.Id)
-	teachingUserUserMobileKey := fmt.Sprintf("%s%v", cacheTeachingUserUserMobilePrefix, data.Mobile)
+	userEmailKey := fmt.Sprintf("%s%v", cacheUserEmailPrefix, data.Email)
+	userIdKey := fmt.Sprintf("%s%v", cacheUserIdPrefix, data.Id)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, newData.Mobile, newData.Password, newData.Nickname, newData.Avatar, newData.Role, newData.Status, newData.DeletedAt, newData.Id)
-	}, teachingUserUserIdKey, teachingUserUserMobileKey)
+		return conn.ExecCtx(ctx, query, newData.Email, newData.Password, newData.Nickname, newData.Avatar, newData.Role, newData.Status, newData.DeletedAt, newData.Id)
+	}, userEmailKey, userIdKey)
 	return err
 }
 
 func (m *defaultUserModel) formatPrimary(primary any) string {
-	return fmt.Sprintf("%s%v", cacheTeachingUserUserIdPrefix, primary)
+	return fmt.Sprintf("%s%v", cacheUserIdPrefix, primary)
 }
 
 func (m *defaultUserModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn, v, primary any) error {

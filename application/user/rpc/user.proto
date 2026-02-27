@@ -11,21 +11,24 @@ service User {
     rpc Login(LoginReq) returns(LoginRes);
     // 根据ID获取用户信息
     rpc FindById(FindByIdReq) returns(FindByIdRes);
-    // 根据手机号获取用户信息
-    rpc FindByMobile(FindByMobileReq) returns(FindByMobileRes);
+    // 根据邮箱获取用户信息
+    rpc FindByEmail(FindByEmailReq) returns(FindByEmailRes);
+    // 发送验证码
+    rpc SendVerifyCode(SendVerifyCodeReq) returns(SendVerifyCodeRes);
 }
 
 message RegisterReq {
-    string mobile = 1;
+    string email = 1;
     string password = 2;
-    int32 role = 3; // 1:学生 2:教师 3:管理员
+    string code = 3; // 验证码
+    int32 role = 4; // 1:学生 2:教师 3:管理员
 }
 message RegisterRes {
     int64 user_id = 1;
 }
 
 message LoginReq {
-    string mobile = 1;
+    string email = 1;
     string password = 2;
 }
 message LoginRes {
@@ -38,19 +41,24 @@ message FindByIdReq {
 }
 message FindByIdRes {
     int64 user_id = 1;
-    string mobile = 2;
+    string email = 2;
     string nickname = 3;
     string avatar = 4;
     int32 role = 5;
 }
 
-message FindByMobileReq {
-    string mobile = 1;
+message FindByEmailReq {
+    string email = 1;
 }
-message FindByMobileRes {
+message FindByEmailRes {
     int64 user_id = 1;
-    string mobile = 2;
+    string email = 2;
     string nickname = 3;
     string avatar = 4;
     int32 role = 5;
 }
+
+message SendVerifyCodeReq {
+    string email = 1;
+}
+message SendVerifyCodeRes {}

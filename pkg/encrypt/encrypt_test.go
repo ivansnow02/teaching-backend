@@ -2,19 +2,14 @@ package encrypt
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestEncryptMobile(t *testing.T) {
-	mobile := "13800138000"
-	encryptedMobile, err := EncMobile(mobile)
-	if err != nil {
-		t.Fatal(err)
-	}
-	decryptedMobile, err := DecMobile(encryptedMobile)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if mobile != decryptedMobile {
-		t.Fatalf("expected %s, but got %s", mobile, decryptedMobile)
-	}
+func TestEncEmail(t *testing.T) {
+	enc, err := EncEmail("test@example.com")
+	assert.Nil(t, err)
+	dec, err := DecEmail(enc)
+	assert.Nil(t, err)
+	assert.Equal(t, "test@example.com", dec)
 }

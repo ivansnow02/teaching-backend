@@ -14,14 +14,16 @@ import (
 )
 
 type (
-	FindByIdReq     = pb.FindByIdReq
-	FindByIdRes     = pb.FindByIdRes
-	FindByMobileReq = pb.FindByMobileReq
-	FindByMobileRes = pb.FindByMobileRes
-	LoginReq        = pb.LoginReq
-	LoginRes        = pb.LoginRes
-	RegisterReq     = pb.RegisterReq
-	RegisterRes     = pb.RegisterRes
+	FindByEmailReq    = pb.FindByEmailReq
+	FindByEmailRes    = pb.FindByEmailRes
+	FindByIdReq       = pb.FindByIdReq
+	FindByIdRes       = pb.FindByIdRes
+	LoginReq          = pb.LoginReq
+	LoginRes          = pb.LoginRes
+	RegisterReq       = pb.RegisterReq
+	RegisterRes       = pb.RegisterRes
+	SendVerifyCodeReq = pb.SendVerifyCodeReq
+	SendVerifyCodeRes = pb.SendVerifyCodeRes
 
 	User interface {
 		// 注册
@@ -30,8 +32,10 @@ type (
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
 		// 根据ID获取用户信息
 		FindById(ctx context.Context, in *FindByIdReq, opts ...grpc.CallOption) (*FindByIdRes, error)
-		// 根据手机号获取用户信息
-		FindByMobile(ctx context.Context, in *FindByMobileReq, opts ...grpc.CallOption) (*FindByMobileRes, error)
+		// 根据邮箱获取用户信息
+		FindByEmail(ctx context.Context, in *FindByEmailReq, opts ...grpc.CallOption) (*FindByEmailRes, error)
+		// 发送验证码
+		SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error)
 	}
 
 	defaultUser struct {
@@ -63,8 +67,14 @@ func (m *defaultUser) FindById(ctx context.Context, in *FindByIdReq, opts ...grp
 	return client.FindById(ctx, in, opts...)
 }
 
-// 根据手机号获取用户信息
-func (m *defaultUser) FindByMobile(ctx context.Context, in *FindByMobileReq, opts ...grpc.CallOption) (*FindByMobileRes, error) {
+// 根据邮箱获取用户信息
+func (m *defaultUser) FindByEmail(ctx context.Context, in *FindByEmailReq, opts ...grpc.CallOption) (*FindByEmailRes, error) {
 	client := pb.NewUserClient(m.cli.Conn())
-	return client.FindByMobile(ctx, in, opts...)
+	return client.FindByEmail(ctx, in, opts...)
+}
+
+// 发送验证码
+func (m *defaultUser) SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.SendVerifyCode(ctx, in, opts...)
 }

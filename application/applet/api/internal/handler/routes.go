@@ -332,6 +332,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/user/register",
 				Handler: user.RegisterHandler(serverCtx),
 			},
+			{
+				// 发送验证码
+				Method:  http.MethodPost,
+				Path:    "/user/verify-code",
+				Handler: user.SendVerifyCodeHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/v1"),
 	)

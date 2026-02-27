@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.4
-// source: user.proto
+// source: application/user/rpc/user.proto
 
 package pb
 
@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_Register_FullMethodName     = "/user.User/Register"
-	User_Login_FullMethodName        = "/user.User/Login"
-	User_FindById_FullMethodName     = "/user.User/FindById"
-	User_FindByMobile_FullMethodName = "/user.User/FindByMobile"
+	User_Register_FullMethodName       = "/user.User/Register"
+	User_Login_FullMethodName          = "/user.User/Login"
+	User_FindById_FullMethodName       = "/user.User/FindById"
+	User_FindByEmail_FullMethodName    = "/user.User/FindByEmail"
+	User_SendVerifyCode_FullMethodName = "/user.User/SendVerifyCode"
 )
 
 // UserClient is the client API for User service.
@@ -37,8 +38,10 @@ type UserClient interface {
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
 	// 根据ID获取用户信息
 	FindById(ctx context.Context, in *FindByIdReq, opts ...grpc.CallOption) (*FindByIdRes, error)
-	// 根据手机号获取用户信息
-	FindByMobile(ctx context.Context, in *FindByMobileReq, opts ...grpc.CallOption) (*FindByMobileRes, error)
+	// 根据邮箱获取用户信息
+	FindByEmail(ctx context.Context, in *FindByEmailReq, opts ...grpc.CallOption) (*FindByEmailRes, error)
+	// 发送验证码
+	SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error)
 }
 
 type userClient struct {
@@ -79,10 +82,20 @@ func (c *userClient) FindById(ctx context.Context, in *FindByIdReq, opts ...grpc
 	return out, nil
 }
 
-func (c *userClient) FindByMobile(ctx context.Context, in *FindByMobileReq, opts ...grpc.CallOption) (*FindByMobileRes, error) {
+func (c *userClient) FindByEmail(ctx context.Context, in *FindByEmailReq, opts ...grpc.CallOption) (*FindByEmailRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(FindByMobileRes)
-	err := c.cc.Invoke(ctx, User_FindByMobile_FullMethodName, in, out, cOpts...)
+	out := new(FindByEmailRes)
+	err := c.cc.Invoke(ctx, User_FindByEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SendVerifyCodeRes)
+	err := c.cc.Invoke(ctx, User_SendVerifyCode_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,8 +114,10 @@ type UserServer interface {
 	Login(context.Context, *LoginReq) (*LoginRes, error)
 	// 根据ID获取用户信息
 	FindById(context.Context, *FindByIdReq) (*FindByIdRes, error)
-	// 根据手机号获取用户信息
-	FindByMobile(context.Context, *FindByMobileReq) (*FindByMobileRes, error)
+	// 根据邮箱获取用户信息
+	FindByEmail(context.Context, *FindByEmailReq) (*FindByEmailRes, error)
+	// 发送验证码
+	SendVerifyCode(context.Context, *SendVerifyCodeReq) (*SendVerifyCodeRes, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -122,8 +137,11 @@ func (UnimplementedUserServer) Login(context.Context, *LoginReq) (*LoginRes, err
 func (UnimplementedUserServer) FindById(context.Context, *FindByIdReq) (*FindByIdRes, error) {
 	return nil, status.Error(codes.Unimplemented, "method FindById not implemented")
 }
-func (UnimplementedUserServer) FindByMobile(context.Context, *FindByMobileReq) (*FindByMobileRes, error) {
-	return nil, status.Error(codes.Unimplemented, "method FindByMobile not implemented")
+func (UnimplementedUserServer) FindByEmail(context.Context, *FindByEmailReq) (*FindByEmailRes, error) {
+	return nil, status.Error(codes.Unimplemented, "method FindByEmail not implemented")
+}
+func (UnimplementedUserServer) SendVerifyCode(context.Context, *SendVerifyCodeReq) (*SendVerifyCodeRes, error) {
+	return nil, status.Error(codes.Unimplemented, "method SendVerifyCode not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -200,20 +218,38 @@ func _User_FindById_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_FindByMobile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindByMobileReq)
+func _User_FindByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FindByEmailReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).FindByMobile(ctx, in)
+		return srv.(UserServer).FindByEmail(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_FindByMobile_FullMethodName,
+		FullMethod: User_FindByEmail_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).FindByMobile(ctx, req.(*FindByMobileReq))
+		return srv.(UserServer).FindByEmail(ctx, req.(*FindByEmailReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_SendVerifyCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendVerifyCodeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SendVerifyCode(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_SendVerifyCode_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SendVerifyCode(ctx, req.(*SendVerifyCodeReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -238,10 +274,14 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_FindById_Handler,
 		},
 		{
-			MethodName: "FindByMobile",
-			Handler:    _User_FindByMobile_Handler,
+			MethodName: "FindByEmail",
+			Handler:    _User_FindByEmail_Handler,
+		},
+		{
+			MethodName: "SendVerifyCode",
+			Handler:    _User_SendVerifyCode_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "user.proto",
+	Metadata: "application/user/rpc/user.proto",
 }

@@ -3,7 +3,7 @@ USE teaching_user;
 
 CREATE TABLE `user` (
     `id`          bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `mobile`      varchar(20)  NOT NULL DEFAULT '' COMMENT '手机号',
+    `email`       varchar(128) NOT NULL DEFAULT '' COMMENT '邮箱',
     `password`    varchar(128) NOT NULL DEFAULT '' COMMENT '密码(加密)',
     `nickname`    varchar(64)  NOT NULL DEFAULT '' COMMENT '昵称',
     `avatar`      varchar(255) NOT NULL DEFAULT '' COMMENT '头像URL',
@@ -13,5 +13,5 @@ CREATE TABLE `user` (
     `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     `deleted_at`  timestamp    NULL DEFAULT NULL COMMENT '删除时间',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_mobile` (`mobile`)
+    UNIQUE KEY `uk_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='用户表';

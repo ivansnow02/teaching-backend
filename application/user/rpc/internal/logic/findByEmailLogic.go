@@ -9,23 +9,23 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type FindByMobileLogic struct {
+type FindByEmailLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewFindByMobileLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindByMobileLogic {
-	return &FindByMobileLogic{
+func NewFindByEmailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindByEmailLogic {
+	return &FindByEmailLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-// 根据手机号获取用户信息
-func (l *FindByMobileLogic) FindByMobile(in *pb.FindByMobileReq) (*pb.FindByMobileRes, error) {
+// 根据邮箱获取用户信息
+func (l *FindByEmailLogic) FindByEmail(in *pb.FindByEmailReq) (*pb.FindByEmailRes, error) {
 	// todo: add your logic here and delete this line
 
-	return &pb.FindByMobileRes{}, nil
+	return &pb.FindByEmailRes{}, nil
 }
