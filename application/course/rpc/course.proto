@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package course;
+option go_package = "./pb";
+
+// 课件服务
+service Course {
+    // 创建课程
+    rpc CreateCourse(CreateCourseReq) returns(CreateCourseRes);
+    // 课程列表
+    rpc CourseList(CourseListReq) returns(CourseListRes);
+    // 课程详情
+    rpc CourseDetail(CourseDetailReq) returns(CourseDetailRes);
+    // 更新课程
+    rpc UpdateCourse(UpdateCourseReq) returns(UpdateCourseRes);
+    // 删除课程
+    rpc DeleteCourse(DeleteCourseReq) returns(DeleteCourseRes);
+
+    // 创建章节
+    rpc CreateChapter(CreateChapterReq) returns(CreateChapterRes);
+    // 章节列表
+    rpc ChapterList(ChapterListReq) returns(ChapterListRes);
+    // 更新章节
+    rpc UpdateChapter(UpdateChapterReq) returns(UpdateChapterRes);
+    // 删除章节
+    rpc DeleteChapter(DeleteChapterReq) returns(DeleteChapterRes);
+
+    // 上传课件
+    rpc CreateMaterial(CreateMaterialReq) returns(CreateMaterialRes);
+    // 课件列表
+    rpc MaterialList(MaterialListReq) returns(MaterialListRes);
+    // 删除课件
+    rpc DeleteMaterial(DeleteMaterialReq) returns(DeleteMaterialRes);
+
+    // 更新学习进度
+    rpc UpdateStudyProgress(UpdateStudyProgressReq) returns(UpdateStudyProgressRes);
+    // 获取学习进度
+    rpc GetStudyProgress(GetStudyProgressReq) returns(GetStudyProgressRes);
+}
+
+// ============ 课程 ============
+
+message CreateCourseReq {
+    string title = 1;
+    string cover = 2;
+    string description = 3;
+    int64 teacher_id = 4;
+}
+message CreateCourseRes {
+    int64 id = 1;
+}
+
+message CourseListReq {
+    int64 teacher_id = 1; // 为0则查全部
+    int64 page = 2;
+    int64 size = 3;
+}
+message CourseItem {
+    int64 id = 1;
+    string title = 2;
+    string cover = 3;
+    string description = 4;
+    int64 teacher_id = 5;
+    int32 status = 6;
+    int64 create_time = 7;
+}
+message CourseListRes {
+    repeated CourseItem list = 1;
+    int64 total = 2;
+}
+
+message CourseDetailReq {
+    int64 id = 1;
+}
+message CourseDetailRes {
+    CourseItem course = 1;
+    repeated ChapterItem chapters = 2;
+}
+
+message UpdateCourseReq {
+    int64 id = 1;
+    string title = 2;
+    string cover = 3;
+    string description = 4;
+    int32 status = 5;
+}
+message UpdateCourseRes {}
+
+message DeleteCourseReq {
+    int64 id = 1;
+}
+message DeleteCourseRes {}
+
+// ============ 章节 ============
+
+message CreateChapterReq {
+    int64 course_id = 1;
+    string title = 2;
+    int32 sort = 3;
+}
+message CreateChapterRes {
+    int64 id = 1;
+}
+
+message ChapterListReq {
+    int64 course_id = 1;
+}
+message ChapterItem {
+    int64 id = 1;
+    int64 course_id = 2;
+    string title = 3;
+    int32 sort = 4;
+    repeated MaterialItem materials = 5;
+}
+message ChapterListRes {
+    repeated ChapterItem list = 1;
+}
+
+message UpdateChapterReq {
+    int64 id = 1;
+    string title = 2;
+    int32 sort = 3;
+}
+message UpdateChapterRes {}
+
+message DeleteChapterReq {
+    int64 id = 1;
+}
+message DeleteChapterRes {}
+
+// ============ 课件 ============
+
+message CreateMaterialReq {
+    int64 chapter_id = 1;
+    string title = 2;
+    int32 type = 3; // 2:PDF 3:文档
+    string url = 4;
+    string file_hash = 5;
+    int64 file_size = 6;
+    int32 sort = 7;
+}
+message CreateMaterialRes {
+    int64 id = 1;
+}
+
+message MaterialListReq {
+    int64 chapter_id = 1;
+}
+message MaterialItem {
+    int64 id = 1;
+    int64 chapter_id = 2;
+    string title = 3;
+    int32 type = 4;
+    string url = 5;
+    string file_hash = 6;
+    int64 file_size = 7;
+    int32 ai_status = 8;
+    int32 sort = 9;
+}
+message MaterialListRes {
+    repeated MaterialItem list = 1;
+}
+
+message DeleteMaterialReq {
+    int64 id = 1;
+}
+message DeleteMaterialRes {}
+
+// ============ 学习进度 ============
+
+message UpdateStudyProgressReq {
+    int64 user_id = 1;
+    int64 course_id = 2;
+    int64 chapter_id = 3;
+    int64 material_id = 4;
+    int32 progress = 5; // 0~100
+}
+message UpdateStudyProgressRes {}
+
+message GetStudyProgressReq {
+    int64 user_id = 1;
+    int64 course_id = 2;
+}
+message StudyProgressItem {
+    int64 material_id = 1;
+    int64 chapter_id = 2;
+    int32 progress = 3;
+}
+message GetStudyProgressRes {
+    repeated StudyProgressItem list = 1;
+}

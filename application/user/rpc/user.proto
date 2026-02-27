@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package user;
+option go_package = "./pb";
+
+// 用户中心服务
+service User {
+    // 注册
+    rpc Register(RegisterReq) returns(RegisterRes);
+    // 登录
+    rpc Login(LoginReq) returns(LoginRes);
+    // 根据ID获取用户信息
+    rpc FindById(FindByIdReq) returns(FindByIdRes);
+    // 根据手机号获取用户信息
+    rpc FindByMobile(FindByMobileReq) returns(FindByMobileRes);
+}
+
+message RegisterReq {
+    string mobile = 1;
+    string password = 2;
+    int32 role = 3; // 1:学生 2:教师 3:管理员
+}
+message RegisterRes {
+    int64 userId = 1;
+}
+
+message LoginReq {
+    string mobile = 1;
+    string password = 2;
+}
+message LoginRes {
+    int64 userId = 1;
+    int32 role = 2;
+}
+
+message FindByIdReq {
+    int64 user_id = 1;
+}
+message FindByIdRes {
+    int64 userId = 1;
+    string mobile = 2;
+    string nickname = 3;
+    string avatar = 4;
+    int32 role = 5;
+}
+
+message FindByMobileReq {
+    string mobile = 1;
+}
+message FindByMobileRes {
+    int64 userId = 1;
+    string mobile = 2;
+    string nickname = 3;
+    string avatar = 4;
+    int32 role = 5;
+}

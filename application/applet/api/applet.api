@@ -1,0 +1,594 @@
+syntax = "v1"
+
+info (
+	title:   "Teaching Backend API"
+	desc:    "面向前端的教育系统接口网关"
+	version: "1.0"
+)
+
+// ================== 类型定义 ==================
+// ---------- 通用 ----------
+type Empty {}
+
+// ---------- 用户 ----------
+type RegisterReq {
+	Mobile   string `json:"mobile"`
+	Password string `json:"password"`
+	Role     int    `json:"role"` // 1:学生 2:教师
+}
+
+type RegisterRes {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
+}
+
+type LoginReq {
+	Mobile   string `json:"mobile"`
+	Password string `json:"password"`
+}
+
+type LoginRes {
+	UserId int64  `json:"user_id"`
+	Token  string `json:"token"`
+	Role   int    `json:"role"`
+}
+
+type UserInfoRes {
+	UserId   int64  `json:"user_id"`
+	Mobile   string `json:"mobile"`
+	Nickname string `json:"nickname"`
+	Avatar   string `json:"avatar"`
+	Role     int    `json:"role"`
+}
+
+// ---------- 课程 ----------
+type CourseItem {
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Cover       string `json:"cover"`
+	Description string `json:"description"`
+	TeacherId   int64  `json:"teacher_id"`
+	Status      int    `json:"status"`
+	CreateTime  int64  `json:"create_time"`
+}
+
+type CreateCourseReq {
+	Title       string `json:"title"`
+	Cover       string `json:"cover"`
+	Description string `json:"description"`
+}
+
+type CreateCourseRes {
+	Id int64 `json:"id"`
+}
+
+type CourseListReq {
+	Page int `form:"page,default=1"`
+	Size int `form:"size,default=10"`
+}
+
+type CourseListRes {
+	List  []CourseItem `json:"list"`
+	Total int64        `json:"total"`
+}
+
+type CourseDetailReq {
+	Id int64 `path:"id"`
+}
+
+type CourseDetailRes {
+	Course   CourseItem    `json:"course"`
+	Chapters []ChapterItem `json:"chapters"`
+}
+
+type UpdateCourseReq {
+	Id          int64  `path:"id"`
+	Title       string `json:"title,optional"`
+	Cover       string `json:"cover,optional"`
+	Description string `json:"description,optional"`
+	Status      int    `json:"status,optional"`
+}
+
+type DeleteCourseReq {
+	Id int64 `path:"id"`
+}
+
+// ---------- 章节 ----------
+type ChapterItem {
+	Id        int64          `json:"id"`
+	CourseId  int64          `json:"course_id"`
+	Title     string         `json:"title"`
+	Sort      int            `json:"sort"`
+	Materials []MaterialItem `json:"materials"`
+}
+
+type CreateChapterReq {
+	CourseId int64  `json:"course_id"`
+	Title    string `json:"title"`
+	Sort     int    `json:"sort,optional"`
+}
+
+type CreateChapterRes {
+	Id int64 `json:"id"`
+}
+
+type ChapterListReq {
+	CourseId int64 `form:"course_id"`
+}
+
+type ChapterListRes {
+	List []ChapterItem `json:"list"`
+}
+
+type UpdateChapterReq {
+	Id    int64  `path:"id"`
+	Title string `json:"title,optional"`
+	Sort  int    `json:"sort,optional"`
+}
+
+type DeleteChapterReq {
+	Id int64 `path:"id"`
+}
+
+// ---------- 课件 ----------
+type MaterialItem {
+	Id        int64  `json:"id"`
+	ChapterId int64  `json:"chapterId"`
+	Title     string `json:"title"`
+	Type      int    `json:"type"`
+	Url       string `json:"url"`
+	FileHash  string `json:"fileHash"`
+	FileSize  int64  `json:"fileSize"`
+	AiStatus  int    `json:"aiStatus"`
+	Sort      int    `json:"sort"`
+}
+
+type CreateMaterialReq {
+	ChapterId int64  `json:"chapterId"`
+	Title     string `json:"title"`
+	Type      int    `json:"type"` // 2:PDF 3:文档
+	Url       string `json:"url"`
+	FileHash  string `json:"fileHash"`
+	FileSize  int64  `json:"fileSize"`
+	Sort      int    `json:"sort,optional"`
+}
+
+type CreateMaterialRes {
+	Id int64 `json:"id"`
+}
+
+type MaterialListReq {
+	ChapterId int64 `form:"chapterId"`
+}
+
+type MaterialListRes {
+	List []MaterialItem `json:"list"`
+}
+
+type DeleteMaterialReq {
+	Id int64 `path:"id"`
+}
+
+// ---------- 学习进度 ----------
+type UpdateStudyProgressReq {
+	CourseId   int64 `json:"course_id"`
+	ChapterId  int64 `json:"chapterId"`
+	MaterialId int64 `json:"material_id"`
+	Progress   int   `json:"progress"` // 0~100
+}
+
+type StudyProgressItem {
+	MaterialId int64 `json:"material_id"`
+	ChapterId  int64 `json:"chapterId"`
+	Progress   int   `json:"progress"`
+}
+
+type GetStudyProgressReq {
+	CourseId int64 `form:"course_id"`
+}
+
+type GetStudyProgressRes {
+	List []StudyProgressItem `json:"list"`
+}
+
+// ---------- 题库 ----------
+type QuestionItem {
+	Id         int64  `json:"id"`
+	CourseId   int64  `json:"course_id"`
+	Type       int    `json:"type"`
+	Content    string `json:"content"`
+	Answer     string `json:"answer"`
+	Analysis   string `json:"analysis"`
+	Score      string `json:"score"`
+	Difficulty int    `json:"difficulty"`
+	CreateTime int64  `json:"create_time"`
+}
+
+type CreateQuestionReq {
+	CourseId        int64  `json:"course_id"`
+	Type            int    `json:"type"` // 1:单选 2:多选 3:判断 4:填空 5:简答
+	Content         string `json:"content"`
+	Answer          string `json:"answer"`
+	Analysis        string `json:"analysis,optional"`
+	KnowledgePoints string `json:" знанияPoints,optional"`
+	Score           string `json:"score"`
+	Difficulty      int    `json:"difficulty"` // 1:简单 2:中等 3:困难
+}
+
+type CreateQuestionRes {
+	Id int64 `json:"id"`
+}
+
+type QuestionListReq {
+	CourseId   int64 `form:"course_id"`
+	Type       int   `form:"type,optional"`
+	Difficulty int   `form:"difficulty,optional"`
+	Page       int   `form:"page,default=1"`
+	Size       int   `form:"size,default=10"`
+}
+
+type QuestionListRes {
+	List  []QuestionItem `json:"list"`
+	Total int64          `json:"total"`
+}
+
+type QuestionDetailReq {
+	Id int64 `path:"id"`
+}
+
+type QuestionDetailRes {
+	Question QuestionItem `json:"question"`
+}
+
+type UpdateQuestionReq {
+	Id              int64  `path:"id"`
+	Content         string `json:"content,optional"`
+	Answer          string `json:"answer,optional"`
+	Analysis        string `json:"analysis,optional"`
+	KnowledgePoints string `json:"knowledgePoints,optional"`
+	Score           string `json:"score,optional"`
+	Difficulty      int    `json:"difficulty,optional"`
+}
+
+type DeleteQuestionReq {
+	Id int64 `path:"id"`
+}
+
+// ---------- 试卷 ----------
+type ExamItem {
+	Id         int64  `json:"id"`
+	CourseId   int64  `json:"course_id"`
+	Title      string `json:"title"`
+	TotalScore string `json:"total_score"`
+	PassScore  string `json:"pass_score"`
+	Duration   int    `json:"duration"`
+	StartTime  int64  `json:"start_time"`
+	EndTime    int64  `json:"end_time"`
+	Status     int    `json:"status"`
+	CreateTime int64  `json:"create_time"`
+}
+
+type CreateExamReq {
+	CourseId   int64  `json:"course_id"`
+	Title      string `json:"title"`
+	TotalScore string `json:"total_score"`
+	PassScore  string `json:"pass_score"`
+	Duration   int    `json:"duration"`
+	StartTime  int64  `json:"start_time"`
+	EndTime    int64  `json:"end_time"`
+}
+
+type CreateExamRes {
+	Id int64 `json:"id"`
+}
+
+type ExamListReq {
+	CourseId int64 `form:"course_id"`
+	Page     int   `form:"page,default=1"`
+	Size     int   `form:"size,default=10"`
+}
+
+type ExamListRes {
+	List  []ExamItem `json:"list"`
+	Total int64      `json:"total"`
+}
+
+type ExamDetailReq {
+	Id int64 `path:"id"`
+}
+
+type ExamQuestionItem {
+	QuestionId int64        `json:"question_id"`
+	Score      string       `json:"score"`
+	Sort       int          `json:"sort"`
+	Question   QuestionItem `json:"question"`
+}
+
+type ExamDetailRes {
+	Exam      ExamItem           `json:"exam"`
+	Questions []ExamQuestionItem `json:"questions"`
+}
+
+type UpdateExamReq {
+	Id         int64  `path:"id"`
+	Title      string `json:"title,optional"`
+	TotalScore string `json:"total_score,optional"`
+	PassScore  string `json:"pass_score,optional"`
+	Duration   int    `json:"duration,optional"`
+	StartTime  int64  `json:"start_time,optional"`
+	EndTime    int64  `json:"end_time,optional"`
+	Status     int    `json:"status,optional"`
+}
+
+type DeleteExamReq {
+	Id int64 `path:"id"`
+}
+
+type AddExamQuestionReq {
+	ExamId     int64  `json:"exam_id"`
+	QuestionId int64  `json:"question_id"`
+	Score      string `json:"score"`
+	Sort       int    `json:"sort,optional"`
+}
+
+type RemoveExamQuestionReq {
+	ExamId     int64 `json:"exam_id"`
+	QuestionId int64 `json:"question_id"`
+}
+
+// ---------- 考试作答 ----------
+type StartExamReq {
+	ExamId int64 `json:"exam_id"`
+}
+
+type StartExamRes {
+	RecordId int64 `json:"record_id"`
+}
+
+type AnswerItem {
+	QuestionId int64  `json:"question_id"`
+	Answer     string `json:"answer"`
+}
+
+type SubmitExamReq {
+	RecordId int64        `json:"record_id"`
+	ExamId   int64        `json:"exam_id"`
+	Answers  []AnswerItem `json:"answers"`
+}
+
+type SubmitExamRes {
+	Success bool `json:"success"`
+}
+
+type GetExamResultReq {
+	RecordId int64 `path:"record_id"`
+}
+
+type GetExamResultRes {
+	ExamId     int64  `json:"exam_id"`
+	Score      string `json:"score"`
+	Status     int    `json:"status"`
+	SubmitTime int64  `json:"submit_time"`
+}
+
+type UserAnswerItem {
+	QuestionId int64  `json:"question_id"`
+	UserAnswer string `json:"user_answer"`
+	IsCorrect  int    `json:"isCorrect"`
+	Score      string `json:"score"`
+	AiStatus   int    `json:"aiStatus"`
+	AiComment  string `json:"aiComment"`
+}
+
+type GetUserAnswersReq {
+	RecordId int64 `path:"record_id"`
+}
+
+type GetUserAnswersRes {
+	List []UserAnswerItem `json:"list"`
+}
+
+// ================== 路由定义 ==================
+// ---------- 用户(无需鉴权) ----------
+@server (
+	prefix: /v1
+	group:  user
+)
+service applet-api {
+	@doc "用户注册"
+	@handler Register
+	post /user/register (RegisterReq) returns (RegisterRes)
+
+	@doc "用户登录"
+	@handler Login
+	post /user/login (LoginReq) returns (LoginRes)
+}
+
+// ---------- 用户(需鉴权) ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  user
+)
+service applet-api {
+	@doc "获取当前用户信息"
+	@handler UserInfo
+	get /user/info returns (UserInfoRes)
+}
+
+// ---------- 课程 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  course
+)
+service applet-api {
+	@doc "创建课程(教师)"
+	@handler CreateCourse
+	post /course/create (CreateCourseReq) returns (CreateCourseRes)
+
+	@doc "课程列表"
+	@handler CourseList
+	get /course/list (CourseListReq) returns (CourseListRes)
+
+	@doc "课程详情"
+	@handler CourseDetail
+	get /course/detail/:id (CourseDetailReq) returns (CourseDetailRes)
+
+	@doc "更新课程(教师)"
+	@handler UpdateCourse
+	put /course/update/:id (UpdateCourseReq) returns (Empty)
+
+	@doc "删除课程(教师)"
+	@handler DeleteCourse
+	delete /course/delete/:id (DeleteCourseReq) returns (Empty)
+}
+
+// ---------- 章节 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  chapter
+)
+service applet-api {
+	@doc "创建章节"
+	@handler CreateChapter
+	post /chapter/create (CreateChapterReq) returns (CreateChapterRes)
+
+	@doc "章节列表"
+	@handler ChapterList
+	get /chapter/list (ChapterListReq) returns (ChapterListRes)
+
+	@doc "更新章节"
+	@handler UpdateChapter
+	put /chapter/update/:id (UpdateChapterReq) returns (Empty)
+
+	@doc "删除章节"
+	@handler DeleteChapter
+	delete /chapter/delete/:id (DeleteChapterReq) returns (Empty)
+}
+
+// ---------- 课件 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  material
+)
+service applet-api {
+	@doc "上传课件"
+	@handler CreateMaterial
+	post /material/create (CreateMaterialReq) returns (CreateMaterialRes)
+
+	@doc "课件列表"
+	@handler MaterialList
+	get /material/list (MaterialListReq) returns (MaterialListRes)
+
+	@doc "删除课件"
+	@handler DeleteMaterial
+	delete /material/delete/:id (DeleteMaterialReq) returns (Empty)
+}
+
+// ---------- 学习进度 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  progress
+)
+service applet-api {
+	@doc "更新学习进度"
+	@handler UpdateStudyProgress
+	post /progress/update (UpdateStudyProgressReq) returns (Empty)
+
+	@doc "获取学习进度"
+	@handler GetStudyProgress
+	get /progress/get (GetStudyProgressReq) returns (GetStudyProgressRes)
+}
+
+// ---------- 题库 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  question
+)
+service applet-api {
+	@doc "创建题目(教师)"
+	@handler CreateQuestion
+	post /question/create (CreateQuestionReq) returns (CreateQuestionRes)
+
+	@doc "题目列表"
+	@handler QuestionList
+	get /question/list (QuestionListReq) returns (QuestionListRes)
+
+	@doc "题目详情"
+	@handler QuestionDetail
+	get /question/detail/:id (QuestionDetailReq) returns (QuestionDetailRes)
+
+	@doc "更新题目(教师)"
+	@handler UpdateQuestion
+	put /question/update/:id (UpdateQuestionReq) returns (Empty)
+
+	@doc "删除题目(教师)"
+	@handler DeleteQuestion
+	delete /question/delete/:id (DeleteQuestionReq) returns (Empty)
+}
+
+// ---------- 试卷管理 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  exam
+)
+service applet-api {
+	@doc "创建试卷(教师)"
+	@handler CreateExam
+	post /exam/create (CreateExamReq) returns (CreateExamRes)
+
+	@doc "试卷列表"
+	@handler ExamList
+	get /exam/list (ExamListReq) returns (ExamListRes)
+
+	@doc "试卷详情"
+	@handler ExamDetail
+	get /exam/detail/:id (ExamDetailReq) returns (ExamDetailRes)
+
+	@doc "更新试卷(教师)"
+	@handler UpdateExam
+	put /exam/update/:id (UpdateExamReq) returns (Empty)
+
+	@doc "删除试卷(教师)"
+	@handler DeleteExam
+	delete /exam/delete/:id (DeleteExamReq) returns (Empty)
+
+	@doc "添加题目到试卷"
+	@handler AddExamQuestion
+	post /exam/question/add (AddExamQuestionReq) returns (Empty)
+
+	@doc "从试卷移除题目"
+	@handler RemoveExamQuestion
+	post /exam/question/remove (RemoveExamQuestionReq) returns (Empty)
+}
+
+// ---------- 考试作答 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  examRecord
+)
+service applet-api {
+	@doc "开始考试"
+	@handler StartExam
+	post /exam-record/start (StartExamReq) returns (StartExamRes)
+
+	@doc "提交答卷"
+	@handler SubmitExam
+	post /exam-record/submit (SubmitExamReq) returns (SubmitExamRes)
+
+	@doc "获取考试结果"
+	@handler GetExamResult
+	get /exam-record/result/:record_id (GetExamResultReq) returns (GetExamResultRes)
+
+	@doc "获取答题明细"
+	@handler GetUserAnswers
+	get /exam-record/answers/:record_id (GetUserAnswersReq) returns (GetUserAnswersRes)
+}
+
