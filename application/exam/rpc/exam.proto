@@ -38,6 +38,8 @@ service Exam {
     rpc StartExam(StartExamReq) returns(StartExamRes);
     // 提交答卷
     rpc SubmitExam(SubmitExamReq) returns(SubmitExamRes);
+    // 考试心跳与答案快照保存 (存Redis)
+    rpc SaveAnswerSnapshot(SaveAnswerSnapshotReq) returns(SaveAnswerSnapshotRes);
     // 获取考试结果
     rpc GetExamResult(GetExamResultReq) returns(GetExamResultRes);
     // 获取学生答题明细
@@ -117,6 +119,8 @@ message CreateExamReq {
     int32 duration = 5; // 考试时长(分钟)
     int64 start_time = 6; // unix时间戳
     int64 end_time = 7;
+    int32 exam_type = 8; // 组卷模式 1:固定 2:随机
+    string rule_json = 9; // 随机组卷规则JSON
 }
 message CreateExamRes {
     int64 id = 1;
@@ -213,6 +217,13 @@ message SubmitExamReq {
 message SubmitExamRes {
     bool success = 1;
 }
+
+message SaveAnswerSnapshotReq {
+    int64 record_id = 1;
+    int64 user_id = 2;
+    repeated AnswerItem answers = 3;
+}
+message SaveAnswerSnapshotRes {}
 
 message GetExamResultReq {
     int64 record_id = 1;

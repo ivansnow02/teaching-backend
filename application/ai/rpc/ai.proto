@@ -1,0 +1,143 @@
+syntax = "proto3";
+
+package ai;
+option go_package = "./pb";
+
+// AI Bridge 服务
+// 作为 Go-zero 微服务与 Python Agent/RAG 系统之间的通信桥梁
+service AiBridge {
+    // ========== 判卷相关 ==========
+    // 提交主观题批阅请求 (异步，由 Kafka 消费者调用)
+    rpc GradeSubjectiveQuestion(GradeSubjectiveQuestionReq) returns(GradeSubjectiveQuestionRes);
+    // 批量批阅一张试卷中的所有主观题
+    rpc GradeExamSubjective(GradeExamSubjectiveReq) returns(GradeExamSubjectiveRes);
+
+    // ========== 课件向量化 ==========
+    // 触发课件向量化 (课件上传成功后由 Course 消费者调用)
+    rpc EmbedMaterial(EmbedMaterialReq) returns(EmbedMaterialRes);
+    // 查询课件向量化进度
+    rpc GetEmbedStatus(GetEmbedStatusReq) returns(GetEmbedStatusRes);
+
+    // ========== 智能助教 (RAG) ==========
+    // 学生提问，基于课件知识库回答
+    rpc AskQuestion(AskQuestionReq) returns(AskQuestionRes);
+
+    // ========== 智能生成 (异步 TaskID 模式) ==========
+    // AI 智能出题 (教师输入知识点，AI 生成结构化题目)
+    rpc GenerateQuestions(GenerateQuestionsReq) returns(GenerateTaskRes);
+    // AI 生成课件大纲 (教师输入主题，AI 生成课件提纲)
+    rpc GenerateCourseOutline(GenerateCourseOutlineReq) returns(GenerateTaskRes);
+    // AI 生成章节课件内容 (教师选择章节并输入要求，AI输出Markdown课件)
+    rpc GenerateCourseware(GenerateCoursewareReq) returns(GenerateTaskRes);
+    // 查询异步生成任务的状态与结果
+    rpc GetAiTaskStatus(GetAiTaskStatusReq) returns(GetAiTaskStatusRes);
+}
+
+// ============ 判卷 ============
+
+message SubjectiveQuestionInput {
+    int64 record_id = 1; // 答卷记录ID
+    int64 question_id = 2; // 题目ID
+    string question_content = 3; // 题目内容
+    string standard_answer = 4; // 标准答案
+    string knowledge_points = 5; // 关联知识点
+    string user_answer = 6; // 学生作答
+    string max_score = 7; // 该题满分
+}
+
+message GradeSubjectiveQuestionReq {
+    SubjectiveQuestionInput input = 1;
+}
+message GradeSubjectiveQuestionRes {
+    int64 question_id = 1;
+    string score = 2; // AI 给出的得分
+    int32 is_correct = 3; // 0:错误 1:正确 2:部分得分
+    string ai_comment = 4; // 苏格拉底式启发点评
+}
+
+message GradeExamSubjectiveReq {
+    int64 record_id = 1;
+    int64 exam_id = 2;
+    int64 user_id = 3;
+    repeated SubjectiveQuestionInput questions = 4;
+}
+message GradeExamSubjectiveRes {
+    repeated GradeSubjectiveQuestionRes results = 1;
+}
+
+// ============ 课件向量化 ============
+
+message EmbedMaterialReq {
+    int64 material_id = 1;
+    int64 course_id = 2;
+    string title = 3;
+    string url = 4; // OSS 文件地址
+    int32 type = 5; // 2:PDF 3:文档
+}
+message EmbedMaterialRes {
+    bool accepted = 1; // 是否被接受处理
+}
+
+message GetEmbedStatusReq {
+    int64 material_id = 1;
+}
+message GetEmbedStatusRes {
+    int32 ai_status = 1; // 0:未处理 1:处理中 2:已完成 3:失败
+    string message = 2;
+}
+
+// ============ 智能助教 (RAG) ============
+
+message AskQuestionReq {
+    int64 course_id = 1;
+    int64 user_id = 2;
+    string question = 3; // 学生的提问内容
+    repeated string history = 4; // 对话历史(可选)
+}
+message AskQuestionRes {
+    string answer = 1; // AI 回答
+    repeated string sources = 2; // 引用来源(课件片段)
+}
+
+// ============ 智能生成 ============
+
+message GenerateQuestionsReq {
+    int64 course_id = 1;
+    string knowledge_points = 2; // 指定知识点范围
+    int32 count = 3; // 生成题目数量
+    int32 type = 4; // 题型: 1~5
+    int32 difficulty = 5; // 难度: 1~3
+}
+message GeneratedQuestion {
+    string content = 1;
+    string answer = 2;
+    string analysis = 3;
+    string knowledge_points = 4;
+    string score = 5;
+    int32 type = 6;
+    int32 difficulty = 7;
+}
+message GenerateCourseOutlineReq {
+    int64 course_id = 1;
+    string topic = 2; // 教师输入的课件主题
+    string requirements = 3; // 额外要求(如风格、深度等)
+}
+
+message GenerateCoursewareReq {
+    int64 chapter_id = 1;
+    string requirements = 2; // 生成要求
+}
+
+// 统一的异步任务返回
+message GenerateTaskRes {
+    string task_id = 1;
+}
+
+message GetAiTaskStatusReq {
+    string task_id = 1;
+}
+message GetAiTaskStatusRes {
+    int32 status = 1; // 0:处理中 1:已完成 2:失败
+    string result = 2; // 成功时的结果(JSON字符串或纯文本Markdown)
+    string message = 3; // 失败时的错误信息
+}

@@ -14,7 +14,7 @@ type Empty {}
 type RegisterReq {
 	Mobile   string `json:"mobile"`
 	Password string `json:"password"`
-	Role     int    `json:"role"` // 1:学生 2:教师
+	Role     int    `json:"role,options=1|2"` // 1:学生 2:教师
 }
 
 type RegisterRes {
@@ -133,23 +133,23 @@ type DeleteChapterReq {
 // ---------- 课件 ----------
 type MaterialItem {
 	Id        int64  `json:"id"`
-	ChapterId int64  `json:"chapterId"`
+	ChapterId int64  `json:"chapter_id"`
 	Title     string `json:"title"`
 	Type      int    `json:"type"`
 	Url       string `json:"url"`
-	FileHash  string `json:"fileHash"`
-	FileSize  int64  `json:"fileSize"`
-	AiStatus  int    `json:"aiStatus"`
+	FileHash  string `json:"file_hash"`
+	FileSize  int64  `json:"file_size"`
+	AiStatus  int    `json:"ai_status"`
 	Sort      int    `json:"sort"`
 }
 
 type CreateMaterialReq {
-	ChapterId int64  `json:"chapterId"`
+	ChapterId int64  `json:"chapter_id"`
 	Title     string `json:"title"`
-	Type      int    `json:"type"` // 2:PDF 3:文档
+	Type      int    `json:"type,options=2|3"` // 2:PDF 3:文档
 	Url       string `json:"url"`
-	FileHash  string `json:"fileHash"`
-	FileSize  int64  `json:"fileSize"`
+	FileHash  string `json:"file_hash"`
+	FileSize  int64  `json:"file_size"`
 	Sort      int    `json:"sort,optional"`
 }
 
@@ -158,7 +158,7 @@ type CreateMaterialRes {
 }
 
 type MaterialListReq {
-	ChapterId int64 `form:"chapterId"`
+	ChapterId int64 `form:"chapter_id"`
 }
 
 type MaterialListRes {
@@ -172,14 +172,14 @@ type DeleteMaterialReq {
 // ---------- 学习进度 ----------
 type UpdateStudyProgressReq {
 	CourseId   int64 `json:"course_id"`
-	ChapterId  int64 `json:"chapterId"`
+	ChapterId  int64 `json:"chapter_id"`
 	MaterialId int64 `json:"material_id"`
 	Progress   int   `json:"progress"` // 0~100
 }
 
 type StudyProgressItem {
 	MaterialId int64 `json:"material_id"`
-	ChapterId  int64 `json:"chapterId"`
+	ChapterId  int64 `json:"chapter_id"`
 	Progress   int   `json:"progress"`
 }
 
@@ -193,26 +193,27 @@ type GetStudyProgressRes {
 
 // ---------- 题库 ----------
 type QuestionItem {
-	Id         int64  `json:"id"`
-	CourseId   int64  `json:"course_id"`
-	Type       int    `json:"type"`
-	Content    string `json:"content"`
-	Answer     string `json:"answer"`
-	Analysis   string `json:"analysis"`
-	Score      string `json:"score"`
-	Difficulty int    `json:"difficulty"`
-	CreateTime int64  `json:"create_time"`
+	Id              int64  `json:"id"`
+	CourseId        int64  `json:"course_id"`
+	Type            int    `json:"type"`
+	Content         string `json:"content"`
+	Answer          string `json:"answer"`
+	Analysis        string `json:"analysis"`
+	KnowledgePoints string `json:"knowledge_points"`
+	Score           string `json:"score"`
+	Difficulty      int    `json:"difficulty"`
+	CreateTime      int64  `json:"create_time"`
 }
 
 type CreateQuestionReq {
 	CourseId        int64  `json:"course_id"`
-	Type            int    `json:"type"` // 1:单选 2:多选 3:判断 4:填空 5:简答
+	Type            int    `json:"type,options=1|2|3|4|5"` // 1:单选 2:多选 3:判断 4:填空 5:简答
 	Content         string `json:"content"`
 	Answer          string `json:"answer"`
 	Analysis        string `json:"analysis,optional"`
-	KnowledgePoints string `json:" знанияPoints,optional"`
+	KnowledgePoints string `json:"knowledge_points,optional"`
 	Score           string `json:"score"`
-	Difficulty      int    `json:"difficulty"` // 1:简单 2:中等 3:困难
+	Difficulty      int    `json:"difficulty,options=1|2|3"` // 1:简单 2:中等 3:困难
 }
 
 type CreateQuestionRes {
@@ -245,9 +246,9 @@ type UpdateQuestionReq {
 	Content         string `json:"content,optional"`
 	Answer          string `json:"answer,optional"`
 	Analysis        string `json:"analysis,optional"`
-	KnowledgePoints string `json:"knowledgePoints,optional"`
+	KnowledgePoints string `json:"knowledge_points,optional"`
 	Score           string `json:"score,optional"`
-	Difficulty      int    `json:"difficulty,optional"`
+	Difficulty      int    `json:"difficulty,options=1|2|3,optional"`
 }
 
 type DeleteQuestionReq {
@@ -265,6 +266,7 @@ type ExamItem {
 	StartTime  int64  `json:"start_time"`
 	EndTime    int64  `json:"end_time"`
 	Status     int    `json:"status"`
+	ExamType   int    `json:"exam_type"` // 1:固定 2:随机
 	CreateTime int64  `json:"create_time"`
 }
 
@@ -276,6 +278,8 @@ type CreateExamReq {
 	Duration   int    `json:"duration"`
 	StartTime  int64  `json:"start_time"`
 	EndTime    int64  `json:"end_time"`
+	ExamType   int    `json:"exam_type,options=1|2"` // 1:固定 2:随机
+	RuleJson   string `json:"rule_json,optional"` // 随机组卷规则JSON
 }
 
 type CreateExamRes {
@@ -374,10 +378,10 @@ type GetExamResultRes {
 type UserAnswerItem {
 	QuestionId int64  `json:"question_id"`
 	UserAnswer string `json:"user_answer"`
-	IsCorrect  int    `json:"isCorrect"`
+	IsCorrect  int    `json:"is_correct"`
 	Score      string `json:"score"`
-	AiStatus   int    `json:"aiStatus"`
-	AiComment  string `json:"aiComment"`
+	AiStatus   int    `json:"ai_status"`
+	AiComment  string `json:"ai_comment"`
 }
 
 type GetUserAnswersReq {
@@ -386,6 +390,64 @@ type GetUserAnswersReq {
 
 type GetUserAnswersRes {
 	List []UserAnswerItem `json:"list"`
+}
+
+type GetUploadTokenRes {
+	AccessKeyId string `json:"access_key_id"`
+	Policy      string `json:"policy"`
+	Signature   string `json:"signature"`
+	Host        string `json:"host"`
+	Dir         string `json:"dir"`
+}
+
+type SaveAnswerSnapshotReq {
+	RecordId int64        `json:"record_id"`
+	Answers  []AnswerItem `json:"answers"`
+}
+
+// ---------- AI 智能助教 ----------
+type AskQuestionReq {
+	CourseId int64  `json:"course_id"`
+	Question string `json:"question"`
+}
+
+type AskQuestionRes {
+	Answer  string   `json:"answer"`
+	Sources []string `json:"sources"`
+}
+
+type GenerateQuestionsReq {
+	CourseId        int64  `json:"course_id"`
+	KnowledgePoints string `json:"knowledge_points"`
+	Count           int    `json:"count"`
+	Type            int    `json:"type,options=1|2|3|4|5"`
+	Difficulty      int    `json:"difficulty,options=1|2|3"`
+}
+
+type GenerateCourseOutlineReq {
+	CourseId     int64  `json:"course_id"`
+	Topic        string `json:"topic"`
+	Requirements string `json:"requirements,optional"`
+}
+
+type GenerateCoursewareReq {
+	ChapterId    int64  `json:"chapter_id"`
+	Requirements string `json:"requirements"`
+}
+
+// 异步任务响应
+type GenerateTaskRes {
+	TaskId string `json:"task_id"`
+}
+
+type GetAiTaskStatusReq {
+	TaskId string `path:"task_id"`
+}
+
+type GetAiTaskStatusRes {
+	Status  int    `json:"status"` // 0:生成中 1:完成 2:失败
+	Result  string `json:"result,optional"` // 成功后的结果(JSON序列化或Markdown)
+	Message string `json:"message,optional"` // 失败信息
 }
 
 // ================== 路由定义 ==================
@@ -416,17 +478,25 @@ service applet-api {
 	get /user/info returns (UserInfoRes)
 }
 
-// ---------- 课程 ----------
+// ---------- 资源存储 ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  resource
+)
+service applet-api {
+	@doc "获取 OSS/MinIO 直传签名"
+	@handler GetUploadToken
+	get /resource/upload-token returns (GetUploadTokenRes)
+}
+
+// ---------- 学生与公共查询 (需鉴权) ----------
 @server (
 	jwt:    Auth
 	prefix: /v1
 	group:  course
 )
 service applet-api {
-	@doc "创建课程(教师)"
-	@handler CreateCourse
-	post /course/create (CreateCourseReq) returns (CreateCourseRes)
-
 	@doc "课程列表"
 	@handler CourseList
 	get /course/list (CourseListReq) returns (CourseListRes)
@@ -434,61 +504,30 @@ service applet-api {
 	@doc "课程详情"
 	@handler CourseDetail
 	get /course/detail/:id (CourseDetailReq) returns (CourseDetailRes)
-
-	@doc "更新课程(教师)"
-	@handler UpdateCourse
-	put /course/update/:id (UpdateCourseReq) returns (Empty)
-
-	@doc "删除课程(教师)"
-	@handler DeleteCourse
-	delete /course/delete/:id (DeleteCourseReq) returns (Empty)
 }
 
-// ---------- 章节 ----------
 @server (
 	jwt:    Auth
 	prefix: /v1
 	group:  chapter
 )
 service applet-api {
-	@doc "创建章节"
-	@handler CreateChapter
-	post /chapter/create (CreateChapterReq) returns (CreateChapterRes)
-
 	@doc "章节列表"
 	@handler ChapterList
 	get /chapter/list (ChapterListReq) returns (ChapterListRes)
-
-	@doc "更新章节"
-	@handler UpdateChapter
-	put /chapter/update/:id (UpdateChapterReq) returns (Empty)
-
-	@doc "删除章节"
-	@handler DeleteChapter
-	delete /chapter/delete/:id (DeleteChapterReq) returns (Empty)
 }
 
-// ---------- 课件 ----------
 @server (
 	jwt:    Auth
 	prefix: /v1
 	group:  material
 )
 service applet-api {
-	@doc "上传课件"
-	@handler CreateMaterial
-	post /material/create (CreateMaterialReq) returns (CreateMaterialRes)
-
 	@doc "课件列表"
 	@handler MaterialList
 	get /material/list (MaterialListReq) returns (MaterialListRes)
-
-	@doc "删除课件"
-	@handler DeleteMaterial
-	delete /material/delete/:id (DeleteMaterialReq) returns (Empty)
 }
 
-// ---------- 学习进度 ----------
 @server (
 	jwt:    Auth
 	prefix: /v1
@@ -504,17 +543,12 @@ service applet-api {
 	get /progress/get (GetStudyProgressReq) returns (GetStudyProgressRes)
 }
 
-// ---------- 题库 ----------
 @server (
 	jwt:    Auth
 	prefix: /v1
 	group:  question
 )
 service applet-api {
-	@doc "创建题目(教师)"
-	@handler CreateQuestion
-	post /question/create (CreateQuestionReq) returns (CreateQuestionRes)
-
 	@doc "题目列表"
 	@handler QuestionList
 	get /question/list (QuestionListReq) returns (QuestionListRes)
@@ -522,6 +556,105 @@ service applet-api {
 	@doc "题目详情"
 	@handler QuestionDetail
 	get /question/detail/:id (QuestionDetailReq) returns (QuestionDetailRes)
+}
+
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  exam
+)
+service applet-api {
+	@doc "试卷列表"
+	@handler ExamList
+	get /exam/list (ExamListReq) returns (ExamListRes)
+
+	@doc "试卷详情"
+	@handler ExamDetail
+	get /exam/detail/:id (ExamDetailReq) returns (ExamDetailRes)
+}
+
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  examRecord
+)
+service applet-api {
+	@doc "开始考试"
+	@handler StartExam
+	post /exam-record/start (StartExamReq) returns (StartExamRes)
+
+	@doc "提交答卷"
+	@handler SubmitExam
+	post /exam-record/submit (SubmitExamReq) returns (SubmitExamRes)
+
+	@doc "考试过程心跳与答案快照同步"
+	@handler SaveAnswerSnapshot
+	post /exam-record/snapshot (SaveAnswerSnapshotReq) returns (Empty)
+
+	@doc "获取考试结果"
+	@handler GetExamResult
+	get /exam-record/result/:record_id (GetExamResultReq) returns (GetExamResultRes)
+
+	@doc "获取答题明细"
+	@handler GetUserAnswers
+	get /exam-record/answers/:record_id (GetUserAnswersReq) returns (GetUserAnswersRes)
+}
+
+// ---------- AI 智能助教 (学生可用) ----------
+@server (
+	jwt:    Auth
+	prefix: /v1
+	group:  ai
+)
+service applet-api {
+	@doc "智能助教问答 (基于课件RAG)"
+	@handler AskQuestion
+	post /ai/ask (AskQuestionReq) returns (AskQuestionRes)
+}
+
+// ---------- 教师专属操作 (需鉴权 + 角色中间件) ----------
+@server (
+	jwt:        Auth
+	middleware: CheckTeacherRole
+	prefix:     /v1
+	group:      teacher
+)
+service applet-api {
+	@doc "创建课程(教师)"
+	@handler CreateCourse
+	post /course/create (CreateCourseReq) returns (CreateCourseRes)
+
+	@doc "更新课程(教师)"
+	@handler UpdateCourse
+	put /course/update/:id (UpdateCourseReq) returns (Empty)
+
+	@doc "删除课程(教师)"
+	@handler DeleteCourse
+	delete /course/delete/:id (DeleteCourseReq) returns (Empty)
+
+	@doc "创建章节"
+	@handler CreateChapter
+	post /chapter/create (CreateChapterReq) returns (CreateChapterRes)
+
+	@doc "更新章节"
+	@handler UpdateChapter
+	put /chapter/update/:id (UpdateChapterReq) returns (Empty)
+
+	@doc "删除章节"
+	@handler DeleteChapter
+	delete /chapter/delete/:id (DeleteChapterReq) returns (Empty)
+
+	@doc "上传课件(绑定资源)"
+	@handler CreateMaterial
+	post /material/create (CreateMaterialReq) returns (CreateMaterialRes)
+
+	@doc "删除课件"
+	@handler DeleteMaterial
+	delete /material/delete/:id (DeleteMaterialReq) returns (Empty)
+
+	@doc "创建题目(教师)"
+	@handler CreateQuestion
+	post /question/create (CreateQuestionReq) returns (CreateQuestionRes)
 
 	@doc "更新题目(教师)"
 	@handler UpdateQuestion
@@ -530,26 +663,10 @@ service applet-api {
 	@doc "删除题目(教师)"
 	@handler DeleteQuestion
 	delete /question/delete/:id (DeleteQuestionReq) returns (Empty)
-}
 
-// ---------- 试卷管理 ----------
-@server (
-	jwt:    Auth
-	prefix: /v1
-	group:  exam
-)
-service applet-api {
 	@doc "创建试卷(教师)"
 	@handler CreateExam
 	post /exam/create (CreateExamReq) returns (CreateExamRes)
-
-	@doc "试卷列表"
-	@handler ExamList
-	get /exam/list (ExamListReq) returns (ExamListRes)
-
-	@doc "试卷详情"
-	@handler ExamDetail
-	get /exam/detail/:id (ExamDetailReq) returns (ExamDetailRes)
 
 	@doc "更新试卷(教师)"
 	@handler UpdateExam
@@ -566,29 +683,21 @@ service applet-api {
 	@doc "从试卷移除题目"
 	@handler RemoveExamQuestion
 	post /exam/question/remove (RemoveExamQuestionReq) returns (Empty)
-}
 
-// ---------- 考试作答 ----------
-@server (
-	jwt:    Auth
-	prefix: /v1
-	group:  examRecord
-)
-service applet-api {
-	@doc "开始考试"
-	@handler StartExam
-	post /exam-record/start (StartExamReq) returns (StartExamRes)
+	@doc "AI 智能出题 (基于知识点) - 异步"
+	@handler GenerateQuestions
+	post /ai/generate-questions (GenerateQuestionsReq) returns (GenerateTaskRes)
 
-	@doc "提交答卷"
-	@handler SubmitExam
-	post /exam-record/submit (SubmitExamReq) returns (SubmitExamRes)
+	@doc "AI 生成课件大纲 - 异步"
+	@handler GenerateCourseOutline
+	post /ai/generate-outline (GenerateCourseOutlineReq) returns (GenerateTaskRes)
 
-	@doc "获取考试结果"
-	@handler GetExamResult
-	get /exam-record/result/:record_id (GetExamResultReq) returns (GetExamResultRes)
+	@doc "AI 生成章节课件 - 异步"
+	@handler GenerateCourseware
+	post /ai/generate-courseware (GenerateCoursewareReq) returns (GenerateTaskRes)
 
-	@doc "获取答题明细"
-	@handler GetUserAnswers
-	get /exam-record/answers/:record_id (GetUserAnswersReq) returns (GetUserAnswersRes)
+	@doc "查询 AI 异步生成任务状态"
+	@handler GetAiTaskStatus
+	get /ai/task/status/:task_id (GetAiTaskStatusReq) returns (GetAiTaskStatusRes)
 }
 
