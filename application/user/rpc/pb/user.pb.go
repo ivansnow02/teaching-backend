@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: application/user/rpc/user.proto
+// source: user.proto
 
 package pb
 
@@ -25,15 +25,15 @@ type RegisterReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	Code          string                 `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`  // 验证码
-	Role          int32                  `protobuf:"varint,4,opt,name=role,proto3" json:"role,omitempty"` // 1:学生 2:教师 3:管理员
+	Role          int32                  `protobuf:"varint,3,opt,name=role,proto3" json:"role,omitempty"` // 1:学生 2:教师 3:管理员
+	Nickname      string                 `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *RegisterReq) Reset() {
 	*x = RegisterReq{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[0]
+	mi := &file_user_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -45,7 +45,7 @@ func (x *RegisterReq) String() string {
 func (*RegisterReq) ProtoMessage() {}
 
 func (x *RegisterReq) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[0]
+	mi := &file_user_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -58,7 +58,7 @@ func (x *RegisterReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterReq.ProtoReflect.Descriptor instead.
 func (*RegisterReq) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{0}
+	return file_user_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *RegisterReq) GetEmail() string {
@@ -75,18 +75,18 @@ func (x *RegisterReq) GetPassword() string {
 	return ""
 }
 
-func (x *RegisterReq) GetCode() string {
-	if x != nil {
-		return x.Code
-	}
-	return ""
-}
-
 func (x *RegisterReq) GetRole() int32 {
 	if x != nil {
 		return x.Role
 	}
 	return 0
+}
+
+func (x *RegisterReq) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
 }
 
 type RegisterRes struct {
@@ -98,7 +98,7 @@ type RegisterRes struct {
 
 func (x *RegisterRes) Reset() {
 	*x = RegisterRes{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[1]
+	mi := &file_user_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -110,7 +110,7 @@ func (x *RegisterRes) String() string {
 func (*RegisterRes) ProtoMessage() {}
 
 func (x *RegisterRes) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[1]
+	mi := &file_user_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -123,116 +123,12 @@ func (x *RegisterRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterRes.ProtoReflect.Descriptor instead.
 func (*RegisterRes) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{1}
+	return file_user_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *RegisterRes) GetUserId() int64 {
 	if x != nil {
 		return x.UserId
-	}
-	return 0
-}
-
-type LoginReq struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LoginReq) Reset() {
-	*x = LoginReq{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LoginReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LoginReq) ProtoMessage() {}
-
-func (x *LoginReq) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LoginReq.ProtoReflect.Descriptor instead.
-func (*LoginReq) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *LoginReq) GetEmail() string {
-	if x != nil {
-		return x.Email
-	}
-	return ""
-}
-
-func (x *LoginReq) GetPassword() string {
-	if x != nil {
-		return x.Password
-	}
-	return ""
-}
-
-type LoginRes struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Role          int32                  `protobuf:"varint,2,opt,name=role,proto3" json:"role,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *LoginRes) Reset() {
-	*x = LoginRes{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[3]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *LoginRes) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*LoginRes) ProtoMessage() {}
-
-func (x *LoginRes) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[3]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use LoginRes.ProtoReflect.Descriptor instead.
-func (*LoginRes) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *LoginRes) GetUserId() int64 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-func (x *LoginRes) GetRole() int32 {
-	if x != nil {
-		return x.Role
 	}
 	return 0
 }
@@ -246,7 +142,7 @@ type FindByIdReq struct {
 
 func (x *FindByIdReq) Reset() {
 	*x = FindByIdReq{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[4]
+	mi := &file_user_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -258,7 +154,7 @@ func (x *FindByIdReq) String() string {
 func (*FindByIdReq) ProtoMessage() {}
 
 func (x *FindByIdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[4]
+	mi := &file_user_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,7 +167,7 @@ func (x *FindByIdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindByIdReq.ProtoReflect.Descriptor instead.
 func (*FindByIdReq) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{4}
+	return file_user_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FindByIdReq) GetUserId() int64 {
@@ -294,7 +190,7 @@ type FindByIdRes struct {
 
 func (x *FindByIdRes) Reset() {
 	*x = FindByIdRes{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[5]
+	mi := &file_user_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +202,7 @@ func (x *FindByIdRes) String() string {
 func (*FindByIdRes) ProtoMessage() {}
 
 func (x *FindByIdRes) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[5]
+	mi := &file_user_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -319,7 +215,7 @@ func (x *FindByIdRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindByIdRes.ProtoReflect.Descriptor instead.
 func (*FindByIdRes) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{5}
+	return file_user_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *FindByIdRes) GetUserId() int64 {
@@ -366,7 +262,7 @@ type FindByEmailReq struct {
 
 func (x *FindByEmailReq) Reset() {
 	*x = FindByEmailReq{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[6]
+	mi := &file_user_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -378,7 +274,7 @@ func (x *FindByEmailReq) String() string {
 func (*FindByEmailReq) ProtoMessage() {}
 
 func (x *FindByEmailReq) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[6]
+	mi := &file_user_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -391,7 +287,7 @@ func (x *FindByEmailReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindByEmailReq.ProtoReflect.Descriptor instead.
 func (*FindByEmailReq) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{6}
+	return file_user_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FindByEmailReq) GetEmail() string {
@@ -408,13 +304,14 @@ type FindByEmailRes struct {
 	Nickname      string                 `protobuf:"bytes,3,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	Avatar        string                 `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	Role          int32                  `protobuf:"varint,5,opt,name=role,proto3" json:"role,omitempty"`
+	Password      string                 `protobuf:"bytes,6,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *FindByEmailRes) Reset() {
 	*x = FindByEmailRes{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[7]
+	mi := &file_user_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -426,7 +323,7 @@ func (x *FindByEmailRes) String() string {
 func (*FindByEmailRes) ProtoMessage() {}
 
 func (x *FindByEmailRes) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[7]
+	mi := &file_user_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +336,7 @@ func (x *FindByEmailRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindByEmailRes.ProtoReflect.Descriptor instead.
 func (*FindByEmailRes) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{7}
+	return file_user_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *FindByEmailRes) GetUserId() int64 {
@@ -477,71 +374,37 @@ func (x *FindByEmailRes) GetRole() int32 {
 	return 0
 }
 
-type SendVerifyCodeReq struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Email         string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SendVerifyCodeReq) Reset() {
-	*x = SendVerifyCodeReq{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SendVerifyCodeReq) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SendVerifyCodeReq) ProtoMessage() {}
-
-func (x *SendVerifyCodeReq) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[8]
+func (x *FindByEmailRes) GetPassword() string {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SendVerifyCodeReq.ProtoReflect.Descriptor instead.
-func (*SendVerifyCodeReq) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{8}
-}
-
-func (x *SendVerifyCodeReq) GetEmail() string {
-	if x != nil {
-		return x.Email
+		return x.Password
 	}
 	return ""
 }
 
-type SendVerifyCodeRes struct {
+type UpdateUserReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Nickname      string                 `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Avatar        string                 `protobuf:"bytes,3,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *SendVerifyCodeRes) Reset() {
-	*x = SendVerifyCodeRes{}
-	mi := &file_application_user_rpc_user_proto_msgTypes[9]
+func (x *UpdateUserReq) Reset() {
+	*x = UpdateUserReq{}
+	mi := &file_user_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *SendVerifyCodeRes) String() string {
+func (x *UpdateUserReq) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*SendVerifyCodeRes) ProtoMessage() {}
+func (*UpdateUserReq) ProtoMessage() {}
 
-func (x *SendVerifyCodeRes) ProtoReflect() protoreflect.Message {
-	mi := &file_application_user_rpc_user_proto_msgTypes[9]
+func (x *UpdateUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -552,29 +415,81 @@ func (x *SendVerifyCodeRes) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use SendVerifyCodeRes.ProtoReflect.Descriptor instead.
-func (*SendVerifyCodeRes) Descriptor() ([]byte, []int) {
-	return file_application_user_rpc_user_proto_rawDescGZIP(), []int{9}
+// Deprecated: Use UpdateUserReq.ProtoReflect.Descriptor instead.
+func (*UpdateUserReq) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{6}
 }
 
-var File_application_user_rpc_user_proto protoreflect.FileDescriptor
+func (x *UpdateUserReq) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
 
-const file_application_user_rpc_user_proto_rawDesc = "" +
+func (x *UpdateUserReq) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *UpdateUserReq) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+type UpdateUserRes struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserRes) Reset() {
+	*x = UpdateUserRes{}
+	mi := &file_user_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserRes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserRes) ProtoMessage() {}
+
+func (x *UpdateUserRes) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserRes.ProtoReflect.Descriptor instead.
+func (*UpdateUserRes) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{7}
+}
+
+var File_user_proto protoreflect.FileDescriptor
+
+const file_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1fapplication/user/rpc/user.proto\x12\x04user\"g\n" +
+	"\n" +
+	"user.proto\x12\x04user\"o\n" +
 	"\vRegisterReq\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x12\n" +
-	"\x04code\x18\x03 \x01(\tR\x04code\x12\x12\n" +
-	"\x04role\x18\x04 \x01(\x05R\x04role\"&\n" +
+	"\x04role\x18\x03 \x01(\x05R\x04role\x12\x1a\n" +
+	"\bnickname\x18\x04 \x01(\tR\bnickname\"&\n" +
 	"\vRegisterRes\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\"<\n" +
-	"\bLoginReq\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"7\n" +
-	"\bLoginRes\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x12\n" +
-	"\x04role\x18\x02 \x01(\x05R\x04role\"&\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\"&\n" +
 	"\vFindByIdReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\"\x84\x01\n" +
 	"\vFindByIdRes\x12\x17\n" +
@@ -584,86 +499,85 @@ const file_application_user_rpc_user_proto_rawDesc = "" +
 	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x12\n" +
 	"\x04role\x18\x05 \x01(\x05R\x04role\"&\n" +
 	"\x0eFindByEmailReq\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\"\x87\x01\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"\xa3\x01\n" +
 	"\x0eFindByEmailRes\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
 	"\bnickname\x18\x03 \x01(\tR\bnickname\x12\x16\n" +
 	"\x06avatar\x18\x04 \x01(\tR\x06avatar\x12\x12\n" +
-	"\x04role\x18\x05 \x01(\x05R\x04role\")\n" +
-	"\x11SendVerifyCodeReq\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\"\x13\n" +
-	"\x11SendVerifyCodeRes2\x92\x02\n" +
+	"\x04role\x18\x05 \x01(\x05R\x04role\x12\x1a\n" +
+	"\bpassword\x18\x06 \x01(\tR\bpassword\"\\\n" +
+	"\rUpdateUserReq\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1a\n" +
+	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x16\n" +
+	"\x06avatar\x18\x03 \x01(\tR\x06avatar\"\x0f\n" +
+	"\rUpdateUserRes2\xdd\x01\n" +
 	"\x04User\x120\n" +
-	"\bRegister\x12\x11.user.RegisterReq\x1a\x11.user.RegisterRes\x12'\n" +
-	"\x05Login\x12\x0e.user.LoginReq\x1a\x0e.user.LoginRes\x120\n" +
+	"\bRegister\x12\x11.user.RegisterReq\x1a\x11.user.RegisterRes\x120\n" +
 	"\bFindById\x12\x11.user.FindByIdReq\x1a\x11.user.FindByIdRes\x129\n" +
-	"\vFindByEmail\x12\x14.user.FindByEmailReq\x1a\x14.user.FindByEmailRes\x12B\n" +
-	"\x0eSendVerifyCode\x12\x17.user.SendVerifyCodeReq\x1a\x17.user.SendVerifyCodeResB\x06Z\x04./pbb\x06proto3"
+	"\vFindByEmail\x12\x14.user.FindByEmailReq\x1a\x14.user.FindByEmailRes\x126\n" +
+	"\n" +
+	"UpdateUser\x12\x13.user.UpdateUserReq\x1a\x13.user.UpdateUserResB\x06Z\x04./pbb\x06proto3"
 
 var (
-	file_application_user_rpc_user_proto_rawDescOnce sync.Once
-	file_application_user_rpc_user_proto_rawDescData []byte
+	file_user_proto_rawDescOnce sync.Once
+	file_user_proto_rawDescData []byte
 )
 
-func file_application_user_rpc_user_proto_rawDescGZIP() []byte {
-	file_application_user_rpc_user_proto_rawDescOnce.Do(func() {
-		file_application_user_rpc_user_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_application_user_rpc_user_proto_rawDesc), len(file_application_user_rpc_user_proto_rawDesc)))
+func file_user_proto_rawDescGZIP() []byte {
+	file_user_proto_rawDescOnce.Do(func() {
+		file_user_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)))
 	})
-	return file_application_user_rpc_user_proto_rawDescData
+	return file_user_proto_rawDescData
 }
 
-var file_application_user_rpc_user_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
-var file_application_user_rpc_user_proto_goTypes = []any{
-	(*RegisterReq)(nil),       // 0: user.RegisterReq
-	(*RegisterRes)(nil),       // 1: user.RegisterRes
-	(*LoginReq)(nil),          // 2: user.LoginReq
-	(*LoginRes)(nil),          // 3: user.LoginRes
-	(*FindByIdReq)(nil),       // 4: user.FindByIdReq
-	(*FindByIdRes)(nil),       // 5: user.FindByIdRes
-	(*FindByEmailReq)(nil),    // 6: user.FindByEmailReq
-	(*FindByEmailRes)(nil),    // 7: user.FindByEmailRes
-	(*SendVerifyCodeReq)(nil), // 8: user.SendVerifyCodeReq
-	(*SendVerifyCodeRes)(nil), // 9: user.SendVerifyCodeRes
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_user_proto_goTypes = []any{
+	(*RegisterReq)(nil),    // 0: user.RegisterReq
+	(*RegisterRes)(nil),    // 1: user.RegisterRes
+	(*FindByIdReq)(nil),    // 2: user.FindByIdReq
+	(*FindByIdRes)(nil),    // 3: user.FindByIdRes
+	(*FindByEmailReq)(nil), // 4: user.FindByEmailReq
+	(*FindByEmailRes)(nil), // 5: user.FindByEmailRes
+	(*UpdateUserReq)(nil),  // 6: user.UpdateUserReq
+	(*UpdateUserRes)(nil),  // 7: user.UpdateUserRes
 }
-var file_application_user_rpc_user_proto_depIdxs = []int32{
+var file_user_proto_depIdxs = []int32{
 	0, // 0: user.User.Register:input_type -> user.RegisterReq
-	2, // 1: user.User.Login:input_type -> user.LoginReq
-	4, // 2: user.User.FindById:input_type -> user.FindByIdReq
-	6, // 3: user.User.FindByEmail:input_type -> user.FindByEmailReq
-	8, // 4: user.User.SendVerifyCode:input_type -> user.SendVerifyCodeReq
-	1, // 5: user.User.Register:output_type -> user.RegisterRes
-	3, // 6: user.User.Login:output_type -> user.LoginRes
-	5, // 7: user.User.FindById:output_type -> user.FindByIdRes
-	7, // 8: user.User.FindByEmail:output_type -> user.FindByEmailRes
-	9, // 9: user.User.SendVerifyCode:output_type -> user.SendVerifyCodeRes
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
+	2, // 1: user.User.FindById:input_type -> user.FindByIdReq
+	4, // 2: user.User.FindByEmail:input_type -> user.FindByEmailReq
+	6, // 3: user.User.UpdateUser:input_type -> user.UpdateUserReq
+	1, // 4: user.User.Register:output_type -> user.RegisterRes
+	3, // 5: user.User.FindById:output_type -> user.FindByIdRes
+	5, // 6: user.User.FindByEmail:output_type -> user.FindByEmailRes
+	7, // 7: user.User.UpdateUser:output_type -> user.UpdateUserRes
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_application_user_rpc_user_proto_init() }
-func file_application_user_rpc_user_proto_init() {
-	if File_application_user_rpc_user_proto != nil {
+func init() { file_user_proto_init() }
+func file_user_proto_init() {
+	if File_user_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_application_user_rpc_user_proto_rawDesc), len(file_application_user_rpc_user_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_application_user_rpc_user_proto_goTypes,
-		DependencyIndexes: file_application_user_rpc_user_proto_depIdxs,
-		MessageInfos:      file_application_user_rpc_user_proto_msgTypes,
+		GoTypes:           file_user_proto_goTypes,
+		DependencyIndexes: file_user_proto_depIdxs,
+		MessageInfos:      file_user_proto_msgTypes,
 	}.Build()
-	File_application_user_rpc_user_proto = out.File
-	file_application_user_rpc_user_proto_goTypes = nil
-	file_application_user_rpc_user_proto_depIdxs = nil
+	File_user_proto = out.File
+	file_user_proto_goTypes = nil
+	file_user_proto_depIdxs = nil
 }

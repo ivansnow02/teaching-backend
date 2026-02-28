@@ -5,6 +5,7 @@ import (
 
 	"teaching-backend/application/user/rpc/internal/svc"
 	"teaching-backend/application/user/rpc/pb"
+	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,7 +26,20 @@ func NewFindByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindById
 
 // 根据ID获取用户信息
 func (l *FindByIdLogic) FindById(in *pb.FindByIdReq) (*pb.FindByIdRes, error) {
-	// todo: add your logic here and delete this line
+	user, err := l.svcCtx.UserModel.FindOne(l.ctx, uint64(in.UserId))
+	if err != nil {
+		l.Errorf("查询用户失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+	if user == nil {
+		return &pb.FindByIdRes{}, nil
+	}
 
-	return &pb.FindByIdRes{}, nil
+	return &pb.FindByIdRes{
+		UserId: int64(user.Id),
+		Email: user.Email,
+		Nickname: user.Nickname,
+		Avatar: user.Avatar,
+		Role: int32(user.Role),
+	}, nil
 }

@@ -350,6 +350,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/user/info",
 				Handler: user.UserInfoHandler(serverCtx),
 			},
+			{
+				// 编辑个人信息
+				Method:  http.MethodPut,
+				Path:    "/user/info",
+				Handler: user.UpdateUserInfoHandler(serverCtx),
+			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/v1"),

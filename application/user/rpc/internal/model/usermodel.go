@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -13,6 +14,7 @@ type (
 	// and implement the added methods in customUserModel.
 	UserModel interface {
 		userModel
+		FindByEmail(ctx context.Context, email string) (*User, error)
 	}
 
 	customUserModel struct {
@@ -27,4 +29,13 @@ func NewUserModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) Us
 	}
 }
 
-
+func (m *customUserModel) FindByEmail(ctx context.Context, email string) (*User, error) {
+	user, err := m.FindOneByEmail(ctx, email)
+	if err != nil {
+		if err == ErrNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return user, nil
+}

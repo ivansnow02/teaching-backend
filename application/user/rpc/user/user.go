@@ -14,28 +14,24 @@ import (
 )
 
 type (
-	FindByEmailReq    = pb.FindByEmailReq
-	FindByEmailRes    = pb.FindByEmailRes
-	FindByIdReq       = pb.FindByIdReq
-	FindByIdRes       = pb.FindByIdRes
-	LoginReq          = pb.LoginReq
-	LoginRes          = pb.LoginRes
-	RegisterReq       = pb.RegisterReq
-	RegisterRes       = pb.RegisterRes
-	SendVerifyCodeReq = pb.SendVerifyCodeReq
-	SendVerifyCodeRes = pb.SendVerifyCodeRes
+	FindByEmailReq = pb.FindByEmailReq
+	FindByEmailRes = pb.FindByEmailRes
+	FindByIdReq    = pb.FindByIdReq
+	FindByIdRes    = pb.FindByIdRes
+	RegisterReq    = pb.RegisterReq
+	RegisterRes    = pb.RegisterRes
+	UpdateUserReq  = pb.UpdateUserReq
+	UpdateUserRes  = pb.UpdateUserRes
 
 	User interface {
 		// 注册
 		Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRes, error)
-		// 登录
-		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
 		// 根据ID获取用户信息
 		FindById(ctx context.Context, in *FindByIdReq, opts ...grpc.CallOption) (*FindByIdRes, error)
 		// 根据邮箱获取用户信息
 		FindByEmail(ctx context.Context, in *FindByEmailReq, opts ...grpc.CallOption) (*FindByEmailRes, error)
-		// 发送验证码
-		SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error)
+		// 更新用户信息
+		UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserRes, error)
 	}
 
 	defaultUser struct {
@@ -55,12 +51,6 @@ func (m *defaultUser) Register(ctx context.Context, in *RegisterReq, opts ...grp
 	return client.Register(ctx, in, opts...)
 }
 
-// 登录
-func (m *defaultUser) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error) {
-	client := pb.NewUserClient(m.cli.Conn())
-	return client.Login(ctx, in, opts...)
-}
-
 // 根据ID获取用户信息
 func (m *defaultUser) FindById(ctx context.Context, in *FindByIdReq, opts ...grpc.CallOption) (*FindByIdRes, error) {
 	client := pb.NewUserClient(m.cli.Conn())
@@ -73,8 +63,8 @@ func (m *defaultUser) FindByEmail(ctx context.Context, in *FindByEmailReq, opts 
 	return client.FindByEmail(ctx, in, opts...)
 }
 
-// 发送验证码
-func (m *defaultUser) SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error) {
+// 更新用户信息
+func (m *defaultUser) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserRes, error) {
 	client := pb.NewUserClient(m.cli.Conn())
-	return client.SendVerifyCode(ctx, in, opts...)
+	return client.UpdateUser(ctx, in, opts...)
 }

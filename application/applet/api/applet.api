@@ -48,6 +48,11 @@ type UserInfoRes {
 	Role     int    `json:"role"`
 }
 
+type UpdateUserInfoReq {
+	Nickname string `json:"nickname,optional"`
+	Avatar   string `json:"avatar,optional"`
+}
+
 // ---------- 课程 ----------
 type CourseItem {
 	Id          int64  `json:"id"`
@@ -487,6 +492,10 @@ service applet-api {
 	@doc "获取当前用户信息"
 	@handler UserInfo
 	get /user/info returns (UserInfoRes)
+
+	@doc "编辑个人信息"
+	@handler UpdateUserInfo
+	put /user/info (UpdateUserInfoReq) returns (Empty)
 }
 
 // ---------- 资源存储 ----------

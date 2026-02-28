@@ -29,12 +29,6 @@ func (s *UserServer) Register(ctx context.Context, in *pb.RegisterReq) (*pb.Regi
 	return l.Register(in)
 }
 
-// 登录
-func (s *UserServer) Login(ctx context.Context, in *pb.LoginReq) (*pb.LoginRes, error) {
-	l := logic.NewLoginLogic(ctx, s.svcCtx)
-	return l.Login(in)
-}
-
 // 根据ID获取用户信息
 func (s *UserServer) FindById(ctx context.Context, in *pb.FindByIdReq) (*pb.FindByIdRes, error) {
 	l := logic.NewFindByIdLogic(ctx, s.svcCtx)
@@ -47,8 +41,8 @@ func (s *UserServer) FindByEmail(ctx context.Context, in *pb.FindByEmailReq) (*p
 	return l.FindByEmail(in)
 }
 
-// 发送验证码
-func (s *UserServer) SendVerifyCode(ctx context.Context, in *pb.SendVerifyCodeReq) (*pb.SendVerifyCodeRes, error) {
-	l := logic.NewSendVerifyCodeLogic(ctx, s.svcCtx)
-	return l.SendVerifyCode(in)
+// 更新用户信息
+func (s *UserServer) UpdateUser(ctx context.Context, in *pb.UpdateUserReq) (*pb.UpdateUserRes, error) {
+	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
+	return l.UpdateUser(in)
 }

@@ -1,0 +1,2626 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "title": "Teaching Backend API",
+    "version": "1.0"
+  },
+  "basePath": "/",
+  "paths": {
+    "/v1/ai/ask": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "智能助教问答 (基于课件RAG)",
+        "operationId": "aiAskQuestion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "question"
+              ],
+              "properties": {
+                "course_id": {
+                  "type": "integer"
+                },
+                "question": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "answer": {
+                  "type": "string"
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/generate-courseware": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "AI 生成章节课件 - 异步",
+        "operationId": "teacherGenerateCourseware",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "chapter_id",
+                "requirements"
+              ],
+              "properties": {
+                "chapter_id": {
+                  "type": "integer"
+                },
+                "requirements": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/generate-outline": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "AI 生成课件大纲 - 异步",
+        "operationId": "teacherGenerateCourseOutline",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "topic"
+              ],
+              "properties": {
+                "course_id": {
+                  "type": "integer"
+                },
+                "requirements": {
+                  "type": "string"
+                },
+                "topic": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/generate-questions": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "AI 智能出题 (基于知识点) - 异步",
+        "operationId": "teacherGenerateQuestions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "knowledge_points",
+                "count",
+                "type",
+                "difficulty"
+              ],
+              "properties": {
+                "count": {
+                  "type": "integer"
+                },
+                "course_id": {
+                  "type": "integer"
+                },
+                "difficulty": {
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                },
+                "knowledge_points": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "task_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/task/status/{task_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "查询 AI 异步生成任务状态",
+        "operationId": "teacherGetAiTaskStatus",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "task_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "description": "失败信息",
+                  "type": "string"
+                },
+                "result": {
+                  "description": "成功后的结果(JSON序列化或Markdown)",
+                  "type": "string"
+                },
+                "status": {
+                  "description": "0:生成中 1:完成 2:失败",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chapter/create": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建章节",
+        "operationId": "teacherCreateChapter",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "title"
+              ],
+              "properties": {
+                "course_id": {
+                  "type": "integer"
+                },
+                "sort": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chapter/delete/{id}": {
+      "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除章节",
+        "operationId": "teacherDeleteChapter",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/chapter/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "章节列表",
+        "operationId": "chapterChapterList",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "course_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "course_id",
+                      "title",
+                      "sort",
+                      "materials"
+                    ],
+                    "properties": {
+                      "course_id": {
+                        "type": "integer"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "materials": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "chapter_id",
+                            "title",
+                            "type",
+                            "url",
+                            "file_hash",
+                            "file_size",
+                            "ai_status",
+                            "sort"
+                          ],
+                          "properties": {
+                            "ai_status": {
+                              "type": "integer"
+                            },
+                            "chapter_id": {
+                              "type": "integer"
+                            },
+                            "file_hash": {
+                              "type": "string"
+                            },
+                            "file_size": {
+                              "type": "integer"
+                            },
+                            "id": {
+                              "type": "integer"
+                            },
+                            "sort": {
+                              "type": "integer"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "integer"
+                            },
+                            "url": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "sort": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/chapter/update/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新章节",
+        "operationId": "teacherUpdateChapter",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "sort": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/create": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建课程(教师)",
+        "operationId": "teacherCreateCourse",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "title",
+                "cover",
+                "description"
+              ],
+              "properties": {
+                "cover": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/delete/{id}": {
+      "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除课程(教师)",
+        "operationId": "teacherDeleteCourse",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/detail/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "课程详情",
+        "operationId": "courseCourseDetail",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "chapters": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "course_id",
+                      "title",
+                      "sort",
+                      "materials"
+                    ],
+                    "properties": {
+                      "course_id": {
+                        "type": "integer"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "materials": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "required": [
+                            "id",
+                            "chapter_id",
+                            "title",
+                            "type",
+                            "url",
+                            "file_hash",
+                            "file_size",
+                            "ai_status",
+                            "sort"
+                          ],
+                          "properties": {
+                            "ai_status": {
+                              "type": "integer"
+                            },
+                            "chapter_id": {
+                              "type": "integer"
+                            },
+                            "file_hash": {
+                              "type": "string"
+                            },
+                            "file_size": {
+                              "type": "integer"
+                            },
+                            "id": {
+                              "type": "integer"
+                            },
+                            "sort": {
+                              "type": "integer"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "integer"
+                            },
+                            "url": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "sort": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "course": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "cover",
+                    "description",
+                    "teacher_id",
+                    "status",
+                    "create_time"
+                  ],
+                  "properties": {
+                    "cover": {
+                      "type": "string"
+                    },
+                    "create_time": {
+                      "type": "integer"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "teacher_id": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "课程列表",
+        "operationId": "courseCourseList",
+        "parameters": [
+          {
+            "type": "integer",
+            "default": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "title",
+                      "cover",
+                      "description",
+                      "teacher_id",
+                      "status",
+                      "create_time"
+                    ],
+                    "properties": {
+                      "cover": {
+                        "type": "string"
+                      },
+                      "create_time": {
+                        "type": "integer"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "integer"
+                      },
+                      "teacher_id": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/course/update/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新课程(教师)",
+        "operationId": "teacherUpdateCourse",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cover": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam-record/answers/{record_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取答题明细",
+        "operationId": "examRecordGetUserAnswers",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "record_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "question_id",
+                      "user_answer",
+                      "is_correct",
+                      "score",
+                      "ai_status",
+                      "ai_comment"
+                    ],
+                    "properties": {
+                      "ai_comment": {
+                        "type": "string"
+                      },
+                      "ai_status": {
+                        "type": "integer"
+                      },
+                      "is_correct": {
+                        "type": "integer"
+                      },
+                      "question_id": {
+                        "type": "integer"
+                      },
+                      "score": {
+                        "type": "string"
+                      },
+                      "user_answer": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam-record/result/{record_id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取考试结果",
+        "operationId": "examRecordGetExamResult",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "record_id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "exam_id": {
+                  "type": "integer"
+                },
+                "score": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "submit_time": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam-record/snapshot": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "考试过程心跳与答案快照同步",
+        "operationId": "examRecordSaveAnswerSnapshot",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "record_id",
+                "answers"
+              ],
+              "properties": {
+                "answers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "question_id",
+                      "answer"
+                    ],
+                    "properties": {
+                      "answer": {
+                        "type": "string"
+                      },
+                      "question_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "record_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam-record/start": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "开始考试",
+        "operationId": "examRecordStartExam",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "exam_id"
+              ],
+              "properties": {
+                "exam_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "record_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam-record/submit": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "提交答卷",
+        "operationId": "examRecordSubmitExam",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "record_id",
+                "exam_id",
+                "answers"
+              ],
+              "properties": {
+                "answers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "question_id",
+                      "answer"
+                    ],
+                    "properties": {
+                      "answer": {
+                        "type": "string"
+                      },
+                      "question_id": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "exam_id": {
+                  "type": "integer"
+                },
+                "record_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/create": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建试卷(教师)",
+        "operationId": "teacherCreateExam",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "title",
+                "total_score",
+                "pass_score",
+                "duration",
+                "start_time",
+                "end_time",
+                "exam_type"
+              ],
+              "properties": {
+                "course_id": {
+                  "type": "integer"
+                },
+                "duration": {
+                  "type": "integer"
+                },
+                "end_time": {
+                  "type": "integer"
+                },
+                "exam_type": {
+                  "description": "1:固定 2:随机",
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2"
+                  ]
+                },
+                "pass_score": {
+                  "type": "string"
+                },
+                "rule_json": {
+                  "description": "随机组卷规则JSON",
+                  "type": "string"
+                },
+                "start_time": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "total_score": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/delete/{id}": {
+      "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除试卷(教师)",
+        "operationId": "teacherDeleteExam",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/detail/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "试卷详情",
+        "operationId": "examExamDetail",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "exam": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "course_id",
+                    "title",
+                    "total_score",
+                    "pass_score",
+                    "duration",
+                    "start_time",
+                    "end_time",
+                    "status",
+                    "exam_type",
+                    "create_time"
+                  ],
+                  "properties": {
+                    "course_id": {
+                      "type": "integer"
+                    },
+                    "create_time": {
+                      "type": "integer"
+                    },
+                    "duration": {
+                      "type": "integer"
+                    },
+                    "end_time": {
+                      "type": "integer"
+                    },
+                    "exam_type": {
+                      "description": "1:固定 2:随机",
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "pass_score": {
+                      "type": "string"
+                    },
+                    "start_time": {
+                      "type": "integer"
+                    },
+                    "status": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "total_score": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "question_id",
+                      "score",
+                      "sort",
+                      "question"
+                    ],
+                    "properties": {
+                      "question": {
+                        "type": "object",
+                        "required": [
+                          "id",
+                          "course_id",
+                          "type",
+                          "content",
+                          "answer",
+                          "analysis",
+                          "knowledge_points",
+                          "score",
+                          "difficulty",
+                          "create_time"
+                        ],
+                        "properties": {
+                          "analysis": {
+                            "type": "string"
+                          },
+                          "answer": {
+                            "type": "string"
+                          },
+                          "content": {
+                            "type": "string"
+                          },
+                          "course_id": {
+                            "type": "integer"
+                          },
+                          "create_time": {
+                            "type": "integer"
+                          },
+                          "difficulty": {
+                            "type": "integer"
+                          },
+                          "id": {
+                            "type": "integer"
+                          },
+                          "knowledge_points": {
+                            "type": "string"
+                          },
+                          "score": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "question_id": {
+                        "type": "integer"
+                      },
+                      "score": {
+                        "type": "string"
+                      },
+                      "sort": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "试卷列表",
+        "operationId": "examExamList",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "course_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "course_id",
+                      "title",
+                      "total_score",
+                      "pass_score",
+                      "duration",
+                      "start_time",
+                      "end_time",
+                      "status",
+                      "exam_type",
+                      "create_time"
+                    ],
+                    "properties": {
+                      "course_id": {
+                        "type": "integer"
+                      },
+                      "create_time": {
+                        "type": "integer"
+                      },
+                      "duration": {
+                        "type": "integer"
+                      },
+                      "end_time": {
+                        "type": "integer"
+                      },
+                      "exam_type": {
+                        "description": "1:固定 2:随机",
+                        "type": "integer"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "pass_score": {
+                        "type": "string"
+                      },
+                      "start_time": {
+                        "type": "integer"
+                      },
+                      "status": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "total_score": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/question/add": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "添加题目到试卷",
+        "operationId": "teacherAddExamQuestion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "exam_id",
+                "question_id",
+                "score"
+              ],
+              "properties": {
+                "exam_id": {
+                  "type": "integer"
+                },
+                "question_id": {
+                  "type": "integer"
+                },
+                "score": {
+                  "type": "string"
+                },
+                "sort": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/question/remove": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "从试卷移除题目",
+        "operationId": "teacherRemoveExamQuestion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "exam_id",
+                "question_id"
+              ],
+              "properties": {
+                "exam_id": {
+                  "type": "integer"
+                },
+                "question_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/exam/update/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新试卷(教师)",
+        "operationId": "teacherUpdateExam",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "duration": {
+                  "type": "integer"
+                },
+                "end_time": {
+                  "type": "integer"
+                },
+                "pass_score": {
+                  "type": "string"
+                },
+                "start_time": {
+                  "type": "integer"
+                },
+                "status": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "total_score": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/material/create": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "上传课件(绑定资源)",
+        "operationId": "teacherCreateMaterial",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "chapter_id",
+                "title",
+                "type",
+                "url",
+                "file_hash",
+                "file_size"
+              ],
+              "properties": {
+                "chapter_id": {
+                  "type": "integer"
+                },
+                "file_hash": {
+                  "type": "string"
+                },
+                "file_size": {
+                  "type": "integer"
+                },
+                "sort": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "type": {
+                  "description": "2:PDF 3:文档",
+                  "type": "integer",
+                  "enum": [
+                    "2",
+                    "3"
+                  ]
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/material/delete/{id}": {
+      "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除课件",
+        "operationId": "teacherDeleteMaterial",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/material/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "课件列表",
+        "operationId": "materialMaterialList",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "chapter_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "chapter_id",
+                      "title",
+                      "type",
+                      "url",
+                      "file_hash",
+                      "file_size",
+                      "ai_status",
+                      "sort"
+                    ],
+                    "properties": {
+                      "ai_status": {
+                        "type": "integer"
+                      },
+                      "chapter_id": {
+                        "type": "integer"
+                      },
+                      "file_hash": {
+                        "type": "string"
+                      },
+                      "file_size": {
+                        "type": "integer"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "sort": {
+                        "type": "integer"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "integer"
+                      },
+                      "url": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/progress/get": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取学习进度",
+        "operationId": "progressGetStudyProgress",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "course_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "material_id",
+                      "chapter_id",
+                      "progress"
+                    ],
+                    "properties": {
+                      "chapter_id": {
+                        "type": "integer"
+                      },
+                      "material_id": {
+                        "type": "integer"
+                      },
+                      "progress": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/progress/update": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新学习进度",
+        "operationId": "progressUpdateStudyProgress",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "chapter_id",
+                "material_id",
+                "progress"
+              ],
+              "properties": {
+                "chapter_id": {
+                  "type": "integer"
+                },
+                "course_id": {
+                  "type": "integer"
+                },
+                "material_id": {
+                  "type": "integer"
+                },
+                "progress": {
+                  "description": "0~100",
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/question/create": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "创建题目(教师)",
+        "operationId": "teacherCreateQuestion",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "type",
+                "content",
+                "answer",
+                "score",
+                "difficulty"
+              ],
+              "properties": {
+                "analysis": {
+                  "type": "string"
+                },
+                "answer": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "course_id": {
+                  "type": "integer"
+                },
+                "difficulty": {
+                  "description": "1:简单 2:中等 3:困难",
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                },
+                "knowledge_points": {
+                  "type": "string"
+                },
+                "score": {
+                  "type": "string"
+                },
+                "type": {
+                  "description": "1:单选 2:多选 3:判断 4:填空 5:简答",
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/question/delete/{id}": {
+      "delete": {
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "删除题目(教师)",
+        "operationId": "teacherDeleteQuestion",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/question/detail/{id}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "题目详情",
+        "operationId": "questionQuestionDetail",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "question": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "course_id",
+                    "type",
+                    "content",
+                    "answer",
+                    "analysis",
+                    "knowledge_points",
+                    "score",
+                    "difficulty",
+                    "create_time"
+                  ],
+                  "properties": {
+                    "analysis": {
+                      "type": "string"
+                    },
+                    "answer": {
+                      "type": "string"
+                    },
+                    "content": {
+                      "type": "string"
+                    },
+                    "course_id": {
+                      "type": "integer"
+                    },
+                    "create_time": {
+                      "type": "integer"
+                    },
+                    "difficulty": {
+                      "type": "integer"
+                    },
+                    "id": {
+                      "type": "integer"
+                    },
+                    "knowledge_points": {
+                      "type": "string"
+                    },
+                    "score": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/question/list": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "题目列表",
+        "operationId": "questionQuestionList",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "course_id",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "name": "type",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "name": "difficulty",
+            "in": "query",
+            "allowEmptyValue": true
+          },
+          {
+            "type": "integer",
+            "default": 1,
+            "name": "page",
+            "in": "query",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "default": 10,
+            "name": "size",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "course_id",
+                      "type",
+                      "content",
+                      "answer",
+                      "analysis",
+                      "knowledge_points",
+                      "score",
+                      "difficulty",
+                      "create_time"
+                    ],
+                    "properties": {
+                      "analysis": {
+                        "type": "string"
+                      },
+                      "answer": {
+                        "type": "string"
+                      },
+                      "content": {
+                        "type": "string"
+                      },
+                      "course_id": {
+                        "type": "integer"
+                      },
+                      "create_time": {
+                        "type": "integer"
+                      },
+                      "difficulty": {
+                        "type": "integer"
+                      },
+                      "id": {
+                        "type": "integer"
+                      },
+                      "knowledge_points": {
+                        "type": "string"
+                      },
+                      "score": {
+                        "type": "string"
+                      },
+                      "type": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "total": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/question/update/{id}": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "更新题目(教师)",
+        "operationId": "teacherUpdateQuestion",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "analysis": {
+                  "type": "string"
+                },
+                "answer": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                },
+                "difficulty": {
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3"
+                  ]
+                },
+                "knowledge_points": {
+                  "type": "string"
+                },
+                "score": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/resource/upload-token": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取 OSS/MinIO 直传签名",
+        "operationId": "resourceGetUploadToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "access_key_id": {
+                  "type": "string"
+                },
+                "dir": {
+                  "type": "string"
+                },
+                "host": {
+                  "type": "string"
+                },
+                "policy": {
+                  "type": "string"
+                },
+                "signature": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/info": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "获取当前用户信息",
+        "operationId": "userUserInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "avatar": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "nickname": {
+                  "type": "string"
+                },
+                "role": {
+                  "type": "integer"
+                },
+                "user_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "编辑个人信息",
+        "operationId": "userUpdateUserInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "avatar": {
+                  "type": "string"
+                },
+                "nickname": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/login": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "用户登录",
+        "operationId": "userLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "integer"
+                },
+                "token": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/register": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "用户注册",
+        "operationId": "userRegister",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password",
+                "code",
+                "role"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "role": {
+                  "description": "1:学生 2:教师",
+                  "type": "integer",
+                  "enum": [
+                    "1",
+                    "2"
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                },
+                "user_id": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/user/verify-code": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "发送验证码",
+        "operationId": "userSendVerifyCode",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "email"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-date": "2026-02-28 15:06:38",
+  "x-description": "This is a goctl generated swagger file.",
+  "x-github": "https://github.com/zeromicro/go-zero",
+  "x-go-zero-doc": "https://go-zero.dev/",
+  "x-goctl-version": "1.9.2"
+}

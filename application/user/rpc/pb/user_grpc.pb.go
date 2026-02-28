@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.4
-// source: application/user/rpc/user.proto
+// source: user.proto
 
 package pb
 
@@ -19,29 +19,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_Register_FullMethodName       = "/user.User/Register"
-	User_Login_FullMethodName          = "/user.User/Login"
-	User_FindById_FullMethodName       = "/user.User/FindById"
-	User_FindByEmail_FullMethodName    = "/user.User/FindByEmail"
-	User_SendVerifyCode_FullMethodName = "/user.User/SendVerifyCode"
+	User_Register_FullMethodName    = "/user.User/Register"
+	User_FindById_FullMethodName    = "/user.User/FindById"
+	User_FindByEmail_FullMethodName = "/user.User/FindByEmail"
+	User_UpdateUser_FullMethodName  = "/user.User/UpdateUser"
 )
 
 // UserClient is the client API for User service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 用户中心服务
+// 用户中心服务（原子数据服务，只负责用户数据 CRUD）
 type UserClient interface {
 	// 注册
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterRes, error)
-	// 登录
-	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error)
 	// 根据ID获取用户信息
 	FindById(ctx context.Context, in *FindByIdReq, opts ...grpc.CallOption) (*FindByIdRes, error)
 	// 根据邮箱获取用户信息
 	FindByEmail(ctx context.Context, in *FindByEmailReq, opts ...grpc.CallOption) (*FindByEmailRes, error)
-	// 发送验证码
-	SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error)
+	// 更新用户信息
+	UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserRes, error)
 }
 
 type userClient struct {
@@ -56,16 +53,6 @@ func (c *userClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(RegisterRes)
 	err := c.cc.Invoke(ctx, User_Register_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginRes, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoginRes)
-	err := c.cc.Invoke(ctx, User_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,10 +79,10 @@ func (c *userClient) FindByEmail(ctx context.Context, in *FindByEmailReq, opts .
 	return out, nil
 }
 
-func (c *userClient) SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, opts ...grpc.CallOption) (*SendVerifyCodeRes, error) {
+func (c *userClient) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UpdateUserRes, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SendVerifyCodeRes)
-	err := c.cc.Invoke(ctx, User_SendVerifyCode_FullMethodName, in, out, cOpts...)
+	out := new(UpdateUserRes)
+	err := c.cc.Invoke(ctx, User_UpdateUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -106,18 +93,16 @@ func (c *userClient) SendVerifyCode(ctx context.Context, in *SendVerifyCodeReq, 
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 //
-// 用户中心服务
+// 用户中心服务（原子数据服务，只负责用户数据 CRUD）
 type UserServer interface {
 	// 注册
 	Register(context.Context, *RegisterReq) (*RegisterRes, error)
-	// 登录
-	Login(context.Context, *LoginReq) (*LoginRes, error)
 	// 根据ID获取用户信息
 	FindById(context.Context, *FindByIdReq) (*FindByIdRes, error)
 	// 根据邮箱获取用户信息
 	FindByEmail(context.Context, *FindByEmailReq) (*FindByEmailRes, error)
-	// 发送验证码
-	SendVerifyCode(context.Context, *SendVerifyCodeReq) (*SendVerifyCodeRes, error)
+	// 更新用户信息
+	UpdateUser(context.Context, *UpdateUserReq) (*UpdateUserRes, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -131,17 +116,14 @@ type UnimplementedUserServer struct{}
 func (UnimplementedUserServer) Register(context.Context, *RegisterReq) (*RegisterRes, error) {
 	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedUserServer) Login(context.Context, *LoginReq) (*LoginRes, error) {
-	return nil, status.Error(codes.Unimplemented, "method Login not implemented")
-}
 func (UnimplementedUserServer) FindById(context.Context, *FindByIdReq) (*FindByIdRes, error) {
 	return nil, status.Error(codes.Unimplemented, "method FindById not implemented")
 }
 func (UnimplementedUserServer) FindByEmail(context.Context, *FindByEmailReq) (*FindByEmailRes, error) {
 	return nil, status.Error(codes.Unimplemented, "method FindByEmail not implemented")
 }
-func (UnimplementedUserServer) SendVerifyCode(context.Context, *SendVerifyCodeReq) (*SendVerifyCodeRes, error) {
-	return nil, status.Error(codes.Unimplemented, "method SendVerifyCode not implemented")
+func (UnimplementedUserServer) UpdateUser(context.Context, *UpdateUserReq) (*UpdateUserRes, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -182,24 +164,6 @@ func _User_Register_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LoginReq)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).Login(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: User_Login_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).Login(ctx, req.(*LoginReq))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _User_FindById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FindByIdReq)
 	if err := dec(in); err != nil {
@@ -236,20 +200,20 @@ func _User_FindByEmail_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_SendVerifyCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendVerifyCodeReq)
+func _User_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServer).SendVerifyCode(ctx, in)
+		return srv.(UserServer).UpdateUser(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: User_SendVerifyCode_FullMethodName,
+		FullMethod: User_UpdateUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).SendVerifyCode(ctx, req.(*SendVerifyCodeReq))
+		return srv.(UserServer).UpdateUser(ctx, req.(*UpdateUserReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -266,10 +230,6 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_Register_Handler,
 		},
 		{
-			MethodName: "Login",
-			Handler:    _User_Login_Handler,
-		},
-		{
 			MethodName: "FindById",
 			Handler:    _User_FindById_Handler,
 		},
@@ -278,10 +238,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _User_FindByEmail_Handler,
 		},
 		{
-			MethodName: "SendVerifyCode",
-			Handler:    _User_SendVerifyCode_Handler,
+			MethodName: "UpdateUser",
+			Handler:    _User_UpdateUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "application/user/rpc/user.proto",
+	Metadata: "user.proto",
 }

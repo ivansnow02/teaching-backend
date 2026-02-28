@@ -427,6 +427,11 @@ type UpdateStudyProgressReq struct {
 	Progress   int   `json:"progress"` // 0~100
 }
 
+type UpdateUserInfoReq struct {
+	Nickname string `json:"nickname,optional"`
+	Avatar   string `json:"avatar,optional"`
+}
+
 type UserAnswerItem struct {
 	QuestionId int64  `json:"question_id"`
 	UserAnswer string `json:"user_answer"`
