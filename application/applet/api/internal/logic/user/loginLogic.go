@@ -16,6 +16,7 @@ import (
 	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginLogic struct {
@@ -38,10 +39,10 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 	req.Email = strings.TrimSpace(req.Email)
 	req.Password = strings.TrimSpace(req.Password)
 	if req.Email == "" {
-		return nil, code.RegisterEmailEmpty
+		return nil, code.EmailEmpty
 	}
 	if req.Password == "" {
-		return nil, code.RegisterPasswdEmpty
+		return nil, code.PasswordEmpty
 	}
 
 	email, err := encrypt.EncEmail(req.Email)
@@ -56,10 +57,15 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 	})
 	if err != nil {
 		l.Errorf("查询用户失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 	if u == nil || u.UserId <= 0 {
-		return nil, xcode.AccessDenied
+		return nil, code.UserNotFound
+	}
+
+	// 校验密码
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(req.Password)); err != nil {
+		return nil, code.PasswordIncorrect
 	}
 
 	token, err := jwt.BuildTokens(jwt.TokenOptions{
@@ -72,7 +78,7 @@ func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginRes, err error
 	})
 	if err != nil {
 		l.Errorf("生成token失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	return &types.LoginRes{

@@ -13,7 +13,6 @@ import (
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
 	"teaching-backend/pkg/util"
-	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
@@ -43,10 +42,13 @@ func NewSendVerifyCodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Se
 }
 
 func (l *SendVerifyCodeLogic) SendVerifyCode(req *types.SendVerifyCodeReq) (resp *types.SendVerifyCodeRes, err error) {
+	if req.Email == "" {
+		return nil, code.EmailEmpty
+	}
 	cnt, err := getVerificationCount(l.svcCtx.BizRedis, req.Email)
 	if err != nil {
 		l.Errorf("获取验证码次数失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 	if cnt >= verificationLimitPerDay {
 		return nil, code.VerificationCodeLimitPerDay
@@ -55,7 +57,7 @@ func (l *SendVerifyCodeLogic) SendVerifyCode(req *types.SendVerifyCodeReq) (resp
 	c, err := getActivationCache(l.svcCtx.BizRedis, req.Email)
 	if err != nil {
 		l.Errorf("获取验证码失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 	if len(c) == 0 {
 		c = util.RandomNumeric(6)
@@ -64,12 +66,12 @@ func (l *SendVerifyCodeLogic) SendVerifyCode(req *types.SendVerifyCodeReq) (resp
 	// 先存 Redis + 计数（同步，保证数据一致性）
 	if err := saveActivationCache(l.svcCtx.BizRedis, req.Email, c); err != nil {
 		l.Errorf("保存验证码失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	if err := incrVerificationCount(l.svcCtx.BizRedis, req.Email); err != nil {
 		l.Errorf("增加验证码次数失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	// 异步发送邮件，不阻塞用户请求

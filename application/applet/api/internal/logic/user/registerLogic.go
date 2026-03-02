@@ -14,7 +14,6 @@ import (
 	"teaching-backend/pkg/encrypt"
 	"teaching-backend/pkg/jwt"
 	"teaching-backend/pkg/util"
-	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
@@ -42,10 +41,10 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	req.Password = strings.TrimSpace(req.Password)
 	req.Code = strings.TrimSpace(req.Code)
 	if req.Email == "" {
-		return nil, code.RegisterEmailEmpty
+		return nil, code.EmailEmpty
 	}
 	if req.Password == "" {
-		return nil, code.RegisterPasswdEmpty
+		return nil, code.PasswordEmpty
 	}
 	if req.Code == "" {
 		return nil, code.VerificationCodeEmpty
@@ -60,7 +59,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	email, err := encrypt.EncEmail(req.Email)
 	if err != nil {
 		l.Errorf("邮箱加密失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	// 检查用户是否已存在
@@ -69,7 +68,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	})
 	if err != nil {
 		l.Errorf("查询用户失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 	if u != nil && u.UserId > 0 {
 		return nil, code.EmailHasRegistered
@@ -78,7 +77,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	hashed, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		l.Errorf("密码加密失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	// 生成默认昵称
@@ -92,7 +91,7 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	})
 	if err != nil {
 		l.Errorf("注册失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	token, err := jwt.BuildTokens(jwt.TokenOptions{
@@ -105,12 +104,12 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterRe
 	})
 	if err != nil {
 		l.Errorf("生成token失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	if err := delActivationCache(l.svcCtx.BizRedis, req.Email); err != nil {
 		l.Errorf("删除激活缓存失败: %v", err)
-		return nil, xcode.ServerErr
+		return nil, err
 	}
 
 	return &types.RegisterRes{
