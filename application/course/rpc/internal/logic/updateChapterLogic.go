@@ -37,6 +37,19 @@ func (l *UpdateChapterLogic) UpdateChapter(in *pb.UpdateChapterReq) (*pb.UpdateC
 		return nil, xcode.ServerErr
 	}
 
+	course, err := l.svcCtx.CourseModel.FindOne(l.ctx, chapter.CourseId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.CourseNotFound
+		}
+		l.Errorf("查询课程详情失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
+	}
+
 	chapter.Title = in.Title
 	chapter.Sort = int64(in.Sort)
 

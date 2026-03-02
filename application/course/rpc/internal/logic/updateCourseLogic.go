@@ -37,6 +37,10 @@ func (l *UpdateCourseLogic) UpdateCourse(in *pb.UpdateCourseReq) (*pb.UpdateCour
 		return nil, xcode.ServerErr
 	}
 
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
+	}
+
 	course.Title = in.Title
 	course.Cover = in.Cover
 	course.Description = sql.NullString{String: in.Description, Valid: in.Description != ""}

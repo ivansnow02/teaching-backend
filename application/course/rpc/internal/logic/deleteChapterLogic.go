@@ -28,13 +28,26 @@ func NewDeleteChapterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Del
 
 // 删除章节
 func (l *DeleteChapterLogic) DeleteChapter(in *pb.DeleteChapterReq) (*pb.DeleteChapterRes, error) {
-	_, err := l.svcCtx.CourseChapterModel.FindOne(l.ctx, uint64(in.Id))
+	chapter, err := l.svcCtx.CourseChapterModel.FindOne(l.ctx, uint64(in.Id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, code.ChapterNotFound
 		}
 		l.Errorf("查询待删除章节失败: %v", err)
 		return nil, xcode.ServerErr
+	}
+
+	course, err := l.svcCtx.CourseModel.FindOne(l.ctx, chapter.CourseId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.CourseNotFound
+		}
+		l.Errorf("查询课程详情失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
 	}
 
 	err = l.svcCtx.CourseChapterModel.Delete(l.ctx, uint64(in.Id))

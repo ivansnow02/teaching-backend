@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 
+	"teaching-backend/application/course/rpc/internal/code"
 	"teaching-backend/application/course/rpc/internal/model"
 	"teaching-backend/application/course/rpc/internal/svc"
 	"teaching-backend/application/course/rpc/pb"
@@ -27,6 +29,19 @@ func NewCreateChapterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 
 // 创建章节
 func (l *CreateChapterLogic) CreateChapter(in *pb.CreateChapterReq) (*pb.CreateChapterRes, error) {
+	course, err := l.svcCtx.CourseModel.FindOne(l.ctx, uint64(in.CourseId))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.CourseNotFound
+		}
+		l.Errorf("查课程详情失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
+	}
+
 	res, err := l.svcCtx.CourseChapterModel.Insert(l.ctx, &model.CourseChapter{
 		CourseId: uint64(in.CourseId),
 		Title:    in.Title,

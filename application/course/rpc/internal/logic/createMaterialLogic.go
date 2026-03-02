@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"database/sql"
 
 	"teaching-backend/application/course/rpc/internal/code"
 	"teaching-backend/application/course/rpc/internal/model"
@@ -28,6 +29,28 @@ func NewCreateMaterialLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cr
 
 // 上传课件
 func (l *CreateMaterialLogic) CreateMaterial(in *pb.CreateMaterialReq) (*pb.CreateMaterialRes, error) {
+	chapter, err := l.svcCtx.CourseChapterModel.FindOne(l.ctx, uint64(in.ChapterId))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.ChapterNotFound
+		}
+		l.Errorf("查询章节详情失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	course, err := l.svcCtx.CourseModel.FindOne(l.ctx, chapter.CourseId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.CourseNotFound
+		}
+		l.Errorf("查询课程详情失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
+	}
+
 	if in.Title == "" {
 		return nil, code.MaterialTitleEmpty
 	}

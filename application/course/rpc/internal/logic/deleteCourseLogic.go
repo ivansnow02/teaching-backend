@@ -28,13 +28,17 @@ func NewDeleteCourseLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Dele
 
 // 删除课程
 func (l *DeleteCourseLogic) DeleteCourse(in *pb.DeleteCourseReq) (*pb.DeleteCourseRes, error) {
-	_, err := l.svcCtx.CourseModel.FindOne(l.ctx, uint64(in.Id))
+	course, err := l.svcCtx.CourseModel.FindOne(l.ctx, uint64(in.Id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, code.CourseNotFound
 		}
 		l.Errorf("查待删除课程失败: %v", err)
 		return nil, xcode.ServerErr
+	}
+
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
 	}
 
 	err = l.svcCtx.CourseModel.Delete(l.ctx, uint64(in.Id))

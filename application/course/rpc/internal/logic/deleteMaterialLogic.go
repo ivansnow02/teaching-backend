@@ -28,13 +28,35 @@ func NewDeleteMaterialLogic(ctx context.Context, svcCtx *svc.ServiceContext) *De
 
 // 删除课件
 func (l *DeleteMaterialLogic) DeleteMaterial(in *pb.DeleteMaterialReq) (*pb.DeleteMaterialRes, error) {
-	_, err := l.svcCtx.CourseMaterialModel.FindOne(l.ctx, uint64(in.Id))
+	material, err := l.svcCtx.CourseMaterialModel.FindOne(l.ctx, uint64(in.Id))
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, code.MaterialNotFound
 		}
 		l.Errorf("查询待删除课件失败: %v", err)
 		return nil, xcode.ServerErr
+	}
+
+	chapter, err := l.svcCtx.CourseChapterModel.FindOne(l.ctx, material.ChapterId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.ChapterNotFound
+		}
+		l.Errorf("查询关联章节失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	course, err := l.svcCtx.CourseModel.FindOne(l.ctx, chapter.CourseId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, code.CourseNotFound
+		}
+		l.Errorf("查询关联课程失败: %v", err)
+		return nil, xcode.ServerErr
+	}
+
+	if course.TeacherId != uint64(in.OperatorId) {
+		return nil, code.NoPermission
 	}
 
 	err = l.svcCtx.CourseMaterialModel.Delete(l.ctx, uint64(in.Id))

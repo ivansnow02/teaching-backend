@@ -5,10 +5,12 @@ package teacher
 
 import (
 	"context"
+	"encoding/json"
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
 	"teaching-backend/application/course/rpc/course"
+	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -29,10 +31,20 @@ func NewCreateChapterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateChapterLogic) CreateChapter(req *types.CreateChapterReq) (resp *types.CreateChapterRes, err error) {
+	uid, ok := l.ctx.Value("userId").(json.Number)
+	if !ok {
+		return nil, xcode.AccessDenied
+	}
+	userId, err := uid.Int64()
+	if err != nil || userId <= 0 {
+		return nil, xcode.AccessDenied
+	}
+
 	rpcResp, err := l.svcCtx.CourseRPC.CreateChapter(l.ctx, &course.CreateChapterReq{
-		CourseId: req.CourseId,
-		Title:    req.Title,
-		Sort:     int32(req.Sort),
+		CourseId:   req.CourseId,
+		Title:      req.Title,
+		Sort:       int32(req.Sort),
+		OperatorId: userId,
 	})
 	if err != nil {
 		l.Errorf("创建章节失败: %v", err)

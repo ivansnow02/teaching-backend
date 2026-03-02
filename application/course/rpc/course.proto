@@ -87,12 +87,14 @@ message UpdateCourseReq {
   string cover       = 3;
   string description = 4;
   int32  status      = 5;
+  int64  operator_id = 6;
 }
 
 message UpdateCourseRes {}
 
 message DeleteCourseReq {
-  int64 id = 1;
+  int64 id          = 1;
+  int64 operator_id = 2;
 }
 
 message DeleteCourseRes {}
@@ -100,9 +102,10 @@ message DeleteCourseRes {}
 // ============ 章节 ============
 
 message CreateChapterReq {
-  int64  course_id = 1;
-  string title     = 2;
-  int32  sort      = 3;
+  int64  course_id   = 1;
+  string title       = 2;
+  int32  sort        = 3;
+  int64  operator_id = 4;
 }
 
 message CreateChapterRes {
@@ -126,15 +129,17 @@ message ChapterListRes {
 }
 
 message UpdateChapterReq {
-  int64  id    = 1;
-  string title = 2;
-  int32  sort  = 3;
+  int64  id          = 1;
+  string title       = 2;
+  int32  sort        = 3;
+  int64  operator_id = 4;
 }
 
 message UpdateChapterRes {}
 
 message DeleteChapterReq {
-  int64 id = 1;
+  int64 id          = 1;
+  int64 operator_id = 2;
 }
 
 message DeleteChapterRes {}
@@ -142,13 +147,14 @@ message DeleteChapterRes {}
 // ============ 课件 ============
 
 message CreateMaterialReq {
-  int64  chapter_id = 1;
-  string title      = 2;
-  int32  type       = 3; // 2:PDF 3:文档
-  string url        = 4;
-  string file_hash  = 5;
-  int64  file_size  = 6;
-  int32  sort       = 7;
+  int64  chapter_id  = 1;
+  string title       = 2;
+  int32  type        = 3; // 2:PDF 3:文档
+  string url         = 4;
+  string file_hash   = 5;
+  int64  file_size   = 6;
+  int32  sort        = 7;
+  int64  operator_id = 8;
 }
 
 message CreateMaterialRes {
@@ -176,7 +182,8 @@ message MaterialListRes {
 }
 
 message DeleteMaterialReq {
-  int64 id = 1;
+  int64 id          = 1;
+  int64 operator_id = 2;
 }
 
 message DeleteMaterialRes {}

@@ -440,6 +440,7 @@ type UpdateCourseReq struct {
 	Cover         string                 `protobuf:"bytes,3,opt,name=cover,proto3" json:"cover,omitempty"`
 	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
 	Status        int32                  `protobuf:"varint,5,opt,name=status,proto3" json:"status,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,6,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -509,6 +510,13 @@ func (x *UpdateCourseReq) GetStatus() int32 {
 	return 0
 }
 
+func (x *UpdateCourseReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
+	}
+	return 0
+}
+
 type UpdateCourseRes struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -548,6 +556,7 @@ func (*UpdateCourseRes) Descriptor() ([]byte, []int) {
 type DeleteCourseReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,2,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -585,6 +594,13 @@ func (*DeleteCourseReq) Descriptor() ([]byte, []int) {
 func (x *DeleteCourseReq) GetId() int64 {
 	if x != nil {
 		return x.Id
+	}
+	return 0
+}
+
+func (x *DeleteCourseReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
 	}
 	return 0
 }
@@ -630,6 +646,7 @@ type CreateChapterReq struct {
 	CourseId      int64                  `protobuf:"varint,1,opt,name=course_id,json=courseId,proto3" json:"course_id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Sort          int32                  `protobuf:"varint,3,opt,name=sort,proto3" json:"sort,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,4,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -681,6 +698,13 @@ func (x *CreateChapterReq) GetTitle() string {
 func (x *CreateChapterReq) GetSort() int32 {
 	if x != nil {
 		return x.Sort
+	}
+	return 0
+}
+
+func (x *CreateChapterReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
 	}
 	return 0
 }
@@ -898,6 +922,7 @@ type UpdateChapterReq struct {
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Sort          int32                  `protobuf:"varint,3,opt,name=sort,proto3" json:"sort,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,4,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -953,6 +978,13 @@ func (x *UpdateChapterReq) GetSort() int32 {
 	return 0
 }
 
+func (x *UpdateChapterReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
+	}
+	return 0
+}
+
 type UpdateChapterRes struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -992,6 +1024,7 @@ func (*UpdateChapterRes) Descriptor() ([]byte, []int) {
 type DeleteChapterReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,2,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1029,6 +1062,13 @@ func (*DeleteChapterReq) Descriptor() ([]byte, []int) {
 func (x *DeleteChapterReq) GetId() int64 {
 	if x != nil {
 		return x.Id
+	}
+	return 0
+}
+
+func (x *DeleteChapterReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
 	}
 	return 0
 }
@@ -1078,6 +1118,7 @@ type CreateMaterialReq struct {
 	FileHash      string                 `protobuf:"bytes,5,opt,name=file_hash,json=fileHash,proto3" json:"file_hash,omitempty"`
 	FileSize      int64                  `protobuf:"varint,6,opt,name=file_size,json=fileSize,proto3" json:"file_size,omitempty"`
 	Sort          int32                  `protobuf:"varint,7,opt,name=sort,proto3" json:"sort,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,8,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1157,6 +1198,13 @@ func (x *CreateMaterialReq) GetFileSize() int64 {
 func (x *CreateMaterialReq) GetSort() int32 {
 	if x != nil {
 		return x.Sort
+	}
+	return 0
+}
+
+func (x *CreateMaterialReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
 	}
 	return 0
 }
@@ -1404,6 +1452,7 @@ func (x *MaterialListRes) GetList() []*MaterialItem {
 type DeleteMaterialReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OperatorId    int64                  `protobuf:"varint,2,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1441,6 +1490,13 @@ func (*DeleteMaterialReq) Descriptor() ([]byte, []int) {
 func (x *DeleteMaterialReq) GetId() int64 {
 	if x != nil {
 		return x.Id
+	}
+	return 0
+}
+
+func (x *DeleteMaterialReq) GetOperatorId() int64 {
+	if x != nil {
+		return x.OperatorId
 	}
 	return 0
 }
@@ -1785,21 +1841,27 @@ const file_course_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"n\n" +
 	"\x0fCourseDetailRes\x12*\n" +
 	"\x06course\x18\x01 \x01(\v2\x12.course.CourseItemR\x06course\x12/\n" +
-	"\bchapters\x18\x02 \x03(\v2\x13.course.ChapterItemR\bchapters\"\x87\x01\n" +
+	"\bchapters\x18\x02 \x03(\v2\x13.course.ChapterItemR\bchapters\"\xa8\x01\n" +
 	"\x0fUpdateCourseReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x14\n" +
 	"\x05cover\x18\x03 \x01(\tR\x05cover\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x16\n" +
-	"\x06status\x18\x05 \x01(\x05R\x06status\"\x11\n" +
-	"\x0fUpdateCourseRes\"!\n" +
+	"\x06status\x18\x05 \x01(\x05R\x06status\x12\x1f\n" +
+	"\voperator_id\x18\x06 \x01(\x03R\n" +
+	"operatorId\"\x11\n" +
+	"\x0fUpdateCourseRes\"B\n" +
 	"\x0fDeleteCourseReq\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x11\n" +
-	"\x0fDeleteCourseRes\"Y\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1f\n" +
+	"\voperator_id\x18\x02 \x01(\x03R\n" +
+	"operatorId\"\x11\n" +
+	"\x0fDeleteCourseRes\"z\n" +
 	"\x10CreateChapterReq\x12\x1b\n" +
 	"\tcourse_id\x18\x01 \x01(\x03R\bcourseId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
-	"\x04sort\x18\x03 \x01(\x05R\x04sort\"\"\n" +
+	"\x04sort\x18\x03 \x01(\x05R\x04sort\x12\x1f\n" +
+	"\voperator_id\x18\x04 \x01(\x03R\n" +
+	"operatorId\"\"\n" +
 	"\x10CreateChapterRes\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"-\n" +
 	"\x0eChapterListReq\x12\x1b\n" +
@@ -1811,15 +1873,19 @@ const file_course_proto_rawDesc = "" +
 	"\x04sort\x18\x04 \x01(\x05R\x04sort\x122\n" +
 	"\tmaterials\x18\x05 \x03(\v2\x14.course.MaterialItemR\tmaterials\"9\n" +
 	"\x0eChapterListRes\x12'\n" +
-	"\x04list\x18\x01 \x03(\v2\x13.course.ChapterItemR\x04list\"L\n" +
+	"\x04list\x18\x01 \x03(\v2\x13.course.ChapterItemR\x04list\"m\n" +
 	"\x10UpdateChapterReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
-	"\x04sort\x18\x03 \x01(\x05R\x04sort\"\x12\n" +
-	"\x10UpdateChapterRes\"\"\n" +
+	"\x04sort\x18\x03 \x01(\x05R\x04sort\x12\x1f\n" +
+	"\voperator_id\x18\x04 \x01(\x03R\n" +
+	"operatorId\"\x12\n" +
+	"\x10UpdateChapterRes\"C\n" +
 	"\x10DeleteChapterReq\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x12\n" +
-	"\x10DeleteChapterRes\"\xbc\x01\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1f\n" +
+	"\voperator_id\x18\x02 \x01(\x03R\n" +
+	"operatorId\"\x12\n" +
+	"\x10DeleteChapterRes\"\xdd\x01\n" +
 	"\x11CreateMaterialReq\x12\x1d\n" +
 	"\n" +
 	"chapter_id\x18\x01 \x01(\x03R\tchapterId\x12\x14\n" +
@@ -1828,7 +1894,9 @@ const file_course_proto_rawDesc = "" +
 	"\x03url\x18\x04 \x01(\tR\x03url\x12\x1b\n" +
 	"\tfile_hash\x18\x05 \x01(\tR\bfileHash\x12\x1b\n" +
 	"\tfile_size\x18\x06 \x01(\x03R\bfileSize\x12\x12\n" +
-	"\x04sort\x18\a \x01(\x05R\x04sort\"#\n" +
+	"\x04sort\x18\a \x01(\x05R\x04sort\x12\x1f\n" +
+	"\voperator_id\x18\b \x01(\x03R\n" +
+	"operatorId\"#\n" +
 	"\x11CreateMaterialRes\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"0\n" +
 	"\x0fMaterialListReq\x12\x1d\n" +
@@ -1846,9 +1914,11 @@ const file_course_proto_rawDesc = "" +
 	"\tai_status\x18\b \x01(\x05R\baiStatus\x12\x12\n" +
 	"\x04sort\x18\t \x01(\x05R\x04sort\";\n" +
 	"\x0fMaterialListRes\x12(\n" +
-	"\x04list\x18\x01 \x03(\v2\x14.course.MaterialItemR\x04list\"#\n" +
+	"\x04list\x18\x01 \x03(\v2\x14.course.MaterialItemR\x04list\"D\n" +
 	"\x11DeleteMaterialReq\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"\x13\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1f\n" +
+	"\voperator_id\x18\x02 \x01(\x03R\n" +
+	"operatorId\"\x13\n" +
 	"\x11DeleteMaterialRes\"\xaa\x01\n" +
 	"\x16UpdateStudyProgressReq\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x1b\n" +
