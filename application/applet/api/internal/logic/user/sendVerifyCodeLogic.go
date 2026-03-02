@@ -125,6 +125,7 @@ func getActivationCache(rds *redis.Redis, email string) (string, error) {
 
 func saveActivationCache(rds *redis.Redis, email, code string) error {
 	key := fmt.Sprintf(prefixActivation, email)
+	logx.Infof("code is: %s", code)
 	return rds.Setex(key, code, expireActivation)
 }
 

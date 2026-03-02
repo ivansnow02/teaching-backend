@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/course/rpc/client/course"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,15 @@ func NewUpdateChapterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Upd
 }
 
 func (l *UpdateChapterLogic) UpdateChapter(req *types.UpdateChapterReq) (resp *types.Empty, err error) {
-	// todo: add your logic here and delete this line
+	_, err = l.svcCtx.CourseRPC.UpdateChapter(l.ctx, &course.UpdateChapterReq{
+		Id:    req.Id,
+		Title: req.Title,
+		Sort:  int32(req.Sort),
+	})
+	if err != nil {
+		l.Errorf("更新章节失败: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.Empty{}, nil
 }

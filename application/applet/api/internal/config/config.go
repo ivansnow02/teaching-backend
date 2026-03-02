@@ -18,6 +18,7 @@ type Config struct {
 		RefreshExpire int64
 		RefreshAfter  int64
 	}
-	UserRPC  zrpc.RpcClientConf
-	BizRedis redis.RedisConf
+	UserRPC   zrpc.RpcClientConf
+	CourseRPC zrpc.RpcClientConf
+	BizRedis  redis.RedisConf
 }

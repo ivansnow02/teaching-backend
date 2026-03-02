@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/course/rpc/client/course"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,17 @@ func NewCreateChapterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateChapterLogic) CreateChapter(req *types.CreateChapterReq) (resp *types.CreateChapterRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.CourseRPC.CreateChapter(l.ctx, &course.CreateChapterReq{
+		CourseId: req.CourseId,
+		Title:    req.Title,
+		Sort:     int32(req.Sort),
+	})
+	if err != nil {
+		l.Errorf("创建章节失败: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.CreateChapterRes{
+		Id: rpcResp.Id,
+	}, nil
 }

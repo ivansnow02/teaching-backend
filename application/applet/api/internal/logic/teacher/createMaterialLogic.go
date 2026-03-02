@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/course/rpc/client/course"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,21 @@ func NewCreateMaterialLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cr
 }
 
 func (l *CreateMaterialLogic) CreateMaterial(req *types.CreateMaterialReq) (resp *types.CreateMaterialRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.CourseRPC.CreateMaterial(l.ctx, &course.CreateMaterialReq{
+		ChapterId: req.ChapterId,
+		Title:     req.Title,
+		Type:      int32(req.Type),
+		Url:       req.Url,
+		FileHash:  req.FileHash,
+		FileSize:  req.FileSize,
+		Sort:      int32(req.Sort),
+	})
+	if err != nil {
+		l.Errorf("创建课件失败: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.CreateMaterialRes{
+		Id: rpcResp.Id,
+	}, nil
 }

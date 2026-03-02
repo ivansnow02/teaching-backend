@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/course/rpc/client/course"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,30 @@ func NewMaterialListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Mate
 }
 
 func (l *MaterialListLogic) MaterialList(req *types.MaterialListReq) (resp *types.MaterialListRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.CourseRPC.MaterialList(l.ctx, &course.MaterialListReq{
+		ChapterId: req.ChapterId,
+	})
+	if err != nil {
+		l.Errorf("查询课件列表失败: %v", err)
+		return nil, err
+	}
 
-	return
+	list := make([]types.MaterialItem, 0, len(rpcResp.List))
+	for _, m := range rpcResp.List {
+		list = append(list, types.MaterialItem{
+			Id:        m.Id,
+			ChapterId: m.ChapterId,
+			Title:     m.Title,
+			Type:      int(m.Type),
+			Url:       m.Url,
+			FileHash:  m.FileHash,
+			FileSize:  m.FileSize,
+			AiStatus:  int(m.AiStatus),
+			Sort:      int(m.Sort),
+		})
+	}
+
+	return &types.MaterialListRes{
+		List: list,
+	}, nil
 }

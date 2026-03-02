@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/course/rpc/client/course"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,13 @@ func NewDeleteCourseLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Dele
 }
 
 func (l *DeleteCourseLogic) DeleteCourse(req *types.DeleteCourseReq) (resp *types.Empty, err error) {
-	// todo: add your logic here and delete this line
+	_, err = l.svcCtx.CourseRPC.DeleteCourse(l.ctx, &course.DeleteCourseReq{
+		Id: req.Id,
+	})
+	if err != nil {
+		l.Errorf("删除课程失败: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.Empty{}, nil
 }
