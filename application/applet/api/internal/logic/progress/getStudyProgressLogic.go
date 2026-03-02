@@ -9,7 +9,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
-	"teaching-backend/application/course/rpc/client/course"
+	"teaching-backend/application/course/rpc/course"
 	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"

@@ -6,7 +6,7 @@ package svc
 import (
 	"teaching-backend/application/applet/api/internal/config"
 	"teaching-backend/application/applet/api/internal/middleware"
-	"teaching-backend/application/course/rpc/client/course"
+	"teaching-backend/application/course/rpc/course"
 	"teaching-backend/application/user/rpc/user"
 	"teaching-backend/pkg/interceptors"
 

@@ -1,4 +1,4 @@
-package courselogic
+package logic
 
 import (
 	"context"

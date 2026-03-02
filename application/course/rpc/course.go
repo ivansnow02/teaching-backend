@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"teaching-backend/application/course/rpc/internal/config"
-	courseServer "teaching-backend/application/course/rpc/internal/server/course"
+	courseServer "teaching-backend/application/course/rpc/internal/server"
 	"teaching-backend/application/course/rpc/internal/svc"
 	"teaching-backend/application/course/rpc/pb"
 	"teaching-backend/pkg/interceptors"
