@@ -5,9 +5,12 @@ package examRecord
 
 import (
 	"context"
+	"encoding/json"
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
+	"teaching-backend/pkg/xcode"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +31,25 @@ func NewStartExamLogic(ctx context.Context, svcCtx *svc.ServiceContext) *StartEx
 }
 
 func (l *StartExamLogic) StartExam(req *types.StartExamReq) (resp *types.StartExamRes, err error) {
-	// todo: add your logic here and delete this line
+	uid, ok := l.ctx.Value("userId").(json.Number)
+	if !ok {
+		return nil, xcode.AccessDenied
+	}
+	userId, err := uid.Int64()
+	if err != nil || userId <= 0 {
+		return nil, xcode.AccessDenied
+	}
 
-	return
+	rpcResp, err := l.svcCtx.ExamRPC.StartExam(l.ctx, &exam.StartExamReq{
+		ExamId: req.ExamId,
+		UserId: userId,
+	})
+	if err != nil {
+		l.Errorf("StartExam error: %v", err)
+		return nil, err
+	}
+
+	return &types.StartExamRes{
+		RecordId: rpcResp.RecordId,
+	}, nil
 }

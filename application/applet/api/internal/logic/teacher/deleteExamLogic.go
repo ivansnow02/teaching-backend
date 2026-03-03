@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,13 @@ func NewDeleteExamLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Delete
 }
 
 func (l *DeleteExamLogic) DeleteExam(req *types.DeleteExamReq) (resp *types.Empty, err error) {
-	// todo: add your logic here and delete this line
+	_, err = l.svcCtx.ExamRPC.DeleteExam(l.ctx, &exam.DeleteExamReq{
+		Id: req.Id,
+	})
+	if err != nil {
+		l.Errorf("DeleteExam error: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.Empty{}, nil
 }

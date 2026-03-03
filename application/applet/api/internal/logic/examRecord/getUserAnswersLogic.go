@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,27 @@ func NewGetUserAnswersLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetUserAnswersLogic) GetUserAnswers(req *types.GetUserAnswersReq) (resp *types.GetUserAnswersRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.ExamRPC.GetUserAnswers(l.ctx, &exam.GetUserAnswersReq{
+		RecordId: req.RecordId,
+	})
+	if err != nil {
+		l.Errorf("GetUserAnswers error: %v", err)
+		return nil, err
+	}
 
-	return
+	list := make([]types.UserAnswerItem, 0, len(rpcResp.List))
+	for _, item := range rpcResp.List {
+		list = append(list, types.UserAnswerItem{
+			QuestionId: item.QuestionId,
+			UserAnswer: item.UserAnswer,
+			IsCorrect:  int(item.IsCorrect),
+			Score:      item.Score,
+			AiStatus:   int(item.AiStatus),
+			AiComment:  item.AiComment,
+		})
+	}
+
+	return &types.GetUserAnswersRes{
+		List: list,
+	}, nil
 }

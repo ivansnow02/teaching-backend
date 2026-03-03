@@ -19,6 +19,12 @@ CourseRPC:
       - 127.0.0.1:2379
     Key: course.rpc
   NonBlock: true
+ExamRPC:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: exam.rpc
+  NonBlock: true
 BizRedis:
   Host: 127.0.0.1:6379
   Pass:

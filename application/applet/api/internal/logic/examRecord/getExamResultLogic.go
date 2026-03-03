@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,18 @@ func NewGetExamResultLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetExamResultLogic) GetExamResult(req *types.GetExamResultReq) (resp *types.GetExamResultRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.ExamRPC.GetExamResult(l.ctx, &exam.GetExamResultReq{
+		RecordId: req.RecordId,
+	})
+	if err != nil {
+		l.Errorf("GetExamResult error: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.GetExamResultRes{
+		ExamId:     rpcResp.ExamId,
+		Score:      rpcResp.Score,
+		Status:     int(rpcResp.Status),
+		SubmitTime: rpcResp.SubmitTime,
+	}, nil
 }

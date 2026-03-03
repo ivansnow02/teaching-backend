@@ -7,246 +7,275 @@ option go_package = "./pb";
 service Exam {
     // ========== 题库管理 ==========
     // 创建题目
-    rpc CreateQuestion(CreateQuestionReq) returns(CreateQuestionRes);
+  rpc CreateQuestion(CreateQuestionReq) returns(CreateQuestionRes);
     // 题目列表
-    rpc QuestionList(QuestionListReq) returns(QuestionListRes);
+  rpc QuestionList(QuestionListReq) returns(QuestionListRes);
     // 题目详情
-    rpc QuestionDetail(QuestionDetailReq) returns(QuestionDetailRes);
+  rpc QuestionDetail(QuestionDetailReq) returns(QuestionDetailRes);
     // 更新题目
-    rpc UpdateQuestion(UpdateQuestionReq) returns(UpdateQuestionRes);
+  rpc UpdateQuestion(UpdateQuestionReq) returns(UpdateQuestionRes);
     // 删除题目
-    rpc DeleteQuestion(DeleteQuestionReq) returns(DeleteQuestionRes);
+  rpc DeleteQuestion(DeleteQuestionReq) returns(DeleteQuestionRes);
 
     // ========== 试卷管理 ==========
     // 创建试卷
-    rpc CreateExam(CreateExamReq) returns(CreateExamRes);
+  rpc CreateExam(CreateExamReq) returns(CreateExamRes);
     // 试卷列表
-    rpc ExamList(ExamListReq) returns(ExamListRes);
+  rpc ExamList(ExamListReq) returns(ExamListRes);
     // 试卷详情(含题目)
-    rpc ExamDetail(ExamDetailReq) returns(ExamDetailRes);
+  rpc ExamDetail(ExamDetailReq) returns(ExamDetailRes);
     // 更新试卷
-    rpc UpdateExam(UpdateExamReq) returns(UpdateExamRes);
+  rpc UpdateExam(UpdateExamReq) returns(UpdateExamRes);
     // 删除试卷
-    rpc DeleteExam(DeleteExamReq) returns(DeleteExamRes);
+  rpc DeleteExam(DeleteExamReq) returns(DeleteExamRes);
     // 给试卷添加题目
-    rpc AddExamQuestion(AddExamQuestionReq) returns(AddExamQuestionRes);
+  rpc AddExamQuestion(AddExamQuestionReq) returns(AddExamQuestionRes);
     // 移除试卷题目
-    rpc RemoveExamQuestion(RemoveExamQuestionReq) returns(RemoveExamQuestionRes);
+  rpc RemoveExamQuestion(RemoveExamQuestionReq) returns(RemoveExamQuestionRes);
 
     // ========== 考试作答 ==========
     // 开始考试(创建答卷记录)
-    rpc StartExam(StartExamReq) returns(StartExamRes);
+  rpc StartExam(StartExamReq) returns(StartExamRes);
     // 提交答卷
-    rpc SubmitExam(SubmitExamReq) returns(SubmitExamRes);
+  rpc SubmitExam(SubmitExamReq) returns(SubmitExamRes);
     // 考试心跳与答案快照保存 (存Redis)
-    rpc SaveAnswerSnapshot(SaveAnswerSnapshotReq) returns(SaveAnswerSnapshotRes);
+  rpc SaveAnswerSnapshot(SaveAnswerSnapshotReq) returns(SaveAnswerSnapshotRes);
     // 获取考试结果
-    rpc GetExamResult(GetExamResultReq) returns(GetExamResultRes);
+  rpc GetExamResult(GetExamResultReq) returns(GetExamResultRes);
     // 获取学生答题明细
-    rpc GetUserAnswers(GetUserAnswersReq) returns(GetUserAnswersRes);
+  rpc GetUserAnswers(GetUserAnswersReq) returns(GetUserAnswersRes);
 }
 
 // ============ 题库 ============
 
 message CreateQuestionReq {
-    int64 course_id = 1;
-    int32 type = 2; // 1:单选 2:多选 3:判断 4:填空 5:简答
-    string content = 3; // 题目内容JSON
-    string answer = 4; // 标准答案
-    string analysis = 5; // 解析
-    string knowledge_points = 6; // 知识点
-    string score = 7; // 默认分值
-    int32 difficulty = 8; // 1:简单 2:中等 3:困难
+  int64  course_id        = 1;
+  int64  teacher_id       = 2;
+  int32  type             = 3; // 1:单选 2:多选 3:判断 4:填空 5:简答
+  string content          = 4; // 题目内容JSON
+  string answer           = 5; // 标准答案
+  string analysis         = 6; // 解析
+  string knowledge_points = 7; // 知识点
+  string score            = 8; // 默认分值
+  int32  difficulty       = 9; // 1:简单 2:中等 3:困难
 }
+
 message CreateQuestionRes {
-    int64 id = 1;
+  int64 id = 1;
 }
 
 message QuestionListReq {
-    int64 course_id = 1;
-    int32 type = 2; // 为0则不按题型过滤
-    int32 difficulty = 3; // 为0则不按难度过滤
-    int64 page = 4;
-    int64 size = 5;
+  int64 course_id  = 1;
+  int32 type       = 2; // 为0则不按题型过滤
+  int32 difficulty = 3; // 为0则不按难度过滤
+  int64 page       = 4;
+  int64 size       = 5;
 }
+
 message QuestionItem {
-    int64 id = 1;
-    int64 course_id = 2;
-    int32 type = 3;
-    string content = 4;
-    string answer = 5;
-    string analysis = 6;
-    string knowledge_points = 7;
-    string score = 8;
-    int32 difficulty = 9;
-    int64 create_time = 10;
+  int64  id               = 1;
+  int64  course_id        = 2;
+  int64  teacher_id       = 3;
+  int32  type             = 4;
+  string content          = 5;
+  string answer           = 6;
+  string analysis         = 7;
+  string knowledge_points = 8;
+  string score            = 9;
+  int32  difficulty       = 10;
+  int64  create_time      = 11;
 }
+
 message QuestionListRes {
-    repeated QuestionItem list = 1;
-    int64 total = 2;
+  repeated QuestionItem list  = 1;
+  int64                 total = 2;
 }
 
 message QuestionDetailReq {
-    int64 id = 1;
+  int64 id = 1;
 }
+
 message QuestionDetailRes {
-    QuestionItem question = 1;
+  QuestionItem question = 1;
 }
 
 message UpdateQuestionReq {
-    int64 id = 1;
-    string content = 2;
-    string answer = 3;
-    string analysis = 4;
-    string knowledge_points = 5;
-    string score = 6;
-    int32 difficulty = 7;
+  int64  id               = 1;
+  string content          = 2;
+  string answer           = 3;
+  string analysis         = 4;
+  string knowledge_points = 5;
+  string score            = 6;
+  int32  difficulty       = 7;
+  int64  operator_id      = 8;
 }
+
 message UpdateQuestionRes {}
 
 message DeleteQuestionReq {
-    int64 id = 1;
+  int64 id          = 1;
+  int64 operator_id = 2;
 }
+
 message DeleteQuestionRes {}
 
 // ============ 试卷 ============
 
 message CreateExamReq {
-    int64 course_id = 1;
-    string title = 2;
-    string total_score = 3;
-    string pass_score = 4;
-    int32 duration = 5; // 考试时长(分钟)
-    int64 start_time = 6; // unix时间戳
-    int64 end_time = 7;
-    int32 exam_type = 8; // 组卷模式 1:固定 2:随机
-    string rule_json = 9; // 随机组卷规则JSON
+  int64  course_id   = 1;
+  string title       = 2;
+  string total_score = 3;
+  string pass_score  = 4;
+  int32  duration    = 5; // 考试时长(分钟)
+  int64  start_time  = 6; // unix时间戳
+  int64  end_time    = 7;
+  int32  exam_type   = 8; // 组卷模式 1:固定 2:随机
+  string rule_json   = 9; // 随机组卷规则JSON
 }
+
 message CreateExamRes {
-    int64 id = 1;
+  int64 id = 1;
 }
 
 message ExamListReq {
-    int64 course_id = 1;
-    int64 page = 2;
-    int64 size = 3;
+  int64 course_id = 1;
+  int64 page      = 2;
+  int64 size      = 3;
 }
+
 message ExamItem {
-    int64 id = 1;
-    int64 course_id = 2;
-    string title = 3;
-    string total_score = 4;
-    string pass_score = 5;
-    int32 duration = 6;
-    int64 start_time = 7;
-    int64 end_time = 8;
-    int32 status = 9;
-    int64 create_time = 10;
+  int64  id          = 1;
+  int64  course_id   = 2;
+  string title       = 3;
+  string total_score = 4;
+  string pass_score  = 5;
+  int32  duration    = 6;
+  int64  start_time  = 7;
+  int64  end_time    = 8;
+  int32  status      = 9;
+  int32  exam_type   = 10;
+  int64  create_time = 11;
 }
+
 message ExamListRes {
-    repeated ExamItem list = 1;
-    int64 total = 2;
+  repeated ExamItem list  = 1;
+  int64             total = 2;
 }
 
 message ExamDetailReq {
-    int64 id = 1;
+  int64 id = 1;
 }
+
 message ExamDetailRes {
-    ExamItem exam = 1;
-    repeated ExamQuestionItem questions = 2;
+  ExamItem                  exam      = 1;
+  repeated ExamQuestionItem questions = 2;
 }
 
 message ExamQuestionItem {
-    int64 question_id = 1;
-    string score = 2; // 该题在本试卷的分值
-    int32 sort = 3;
-    QuestionItem question = 4;
+  int64        id          = 1;
+  int64        exam_id     = 2;
+  int64        question_id = 3;
+  string       score       = 4; // 该题在本试卷的分值
+  int32        sort        = 5;
+  QuestionItem question    = 6;
 }
 
 message UpdateExamReq {
-    int64 id = 1;
-    string title = 2;
-    string total_score = 3;
-    string pass_score = 4;
-    int32 duration = 5;
-    int64 start_time = 6;
-    int64 end_time = 7;
-    int32 status = 8;
+  int64  id          = 1;
+  string title       = 2;
+  string total_score = 3;
+  string pass_score  = 4;
+  int32  duration    = 5;
+  int64  start_time  = 6;
+  int64  end_time    = 7;
+  int32  status      = 8;
+  int32  exam_type   = 9;
 }
+
 message UpdateExamRes {}
 
 message DeleteExamReq {
-    int64 id = 1;
+  int64 id = 1;
 }
+
 message DeleteExamRes {}
 
 message AddExamQuestionReq {
-    int64 exam_id = 1;
-    int64 question_id = 2;
-    string score = 3;
-    int32 sort = 4;
+  int64  exam_id     = 1;
+  int64  question_id = 2;
+  string score       = 3;
+  int32  sort        = 4;
 }
+
 message AddExamQuestionRes {}
 
 message RemoveExamQuestionReq {
-    int64 exam_id = 1;
-    int64 question_id = 2;
+  int64 exam_id     = 1;
+  int64 question_id = 2;
 }
+
 message RemoveExamQuestionRes {}
 
 // ============ 考试作答 ============
 
 message StartExamReq {
-    int64 exam_id = 1;
-    int64 user_id = 2;
+  int64 exam_id = 1;
+  int64 user_id = 2;
 }
+
 message StartExamRes {
-    int64 record_id = 1;
+  int64 record_id = 1;
 }
 
 message AnswerItem {
-    int64 question_id = 1;
-    string answer = 2;
+  int64  question_id = 1;
+  string answer      = 2;
 }
+
 message SubmitExamReq {
-    int64 record_id = 1;
-    int64 exam_id = 2;
-    int64 user_id = 3;
-    repeated AnswerItem answers = 4;
+  int64               record_id = 1;
+  int64               exam_id   = 2;
+  int64               user_id   = 3;
+  repeated AnswerItem answers   = 4;
 }
+
 message SubmitExamRes {
-    bool success = 1;
+  bool success = 1;
 }
 
 message SaveAnswerSnapshotReq {
-    int64 record_id = 1;
-    int64 user_id = 2;
-    repeated AnswerItem answers = 3;
+  int64               record_id = 1;
+  int64               user_id   = 2;
+  repeated AnswerItem answers   = 3;
 }
+
 message SaveAnswerSnapshotRes {}
 
 message GetExamResultReq {
-    int64 record_id = 1;
+  int64 record_id = 1;
 }
+
 message GetExamResultRes {
-    int64 exam_id = 1;
-    int64 user_id = 2;
-    string score = 3;
-    int32 status = 4; // 0:答题中 1:待批改 2:已批改
-    int64 submit_time = 5;
+  int64  exam_id     = 1;
+  int64  user_id     = 2;
+  string score       = 3;
+  int32  status      = 4; // 0:答题中 1:待批改 2:已批改
+  int64  submit_time = 5;
 }
 
 message GetUserAnswersReq {
-    int64 record_id = 1;
+  int64 record_id = 1;
 }
+
 message UserAnswerItem {
-    int64 question_id = 1;
-    string user_answer = 2;
-    int32 is_correct = 3;
-    string score = 4;
-    int32 ai_status = 5;
-    string ai_comment = 6;
+  int64  question_id = 1;
+  string user_answer = 2;
+  int32  is_correct  = 3;
+  string score       = 4;
+  int32  ai_status   = 5;
+  string ai_comment  = 6;
 }
+
 message GetUserAnswersRes {
-    repeated UserAnswerItem list = 1;
+  repeated UserAnswerItem list = 1;
 }

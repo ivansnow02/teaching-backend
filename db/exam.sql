@@ -5,6 +5,7 @@ USE teaching_exam;
 CREATE TABLE `question` (
     `id`          bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     `course_id`   bigint(20) UNSIGNED NOT NULL DEFAULT '0' COMMENT '归属课程ID',
+    `teacher_id`  bigint(20) UNSIGNED NOT NULL DEFAULT '0' COMMENT '创建者教师ID',
     `type`        tinyint(2)   NOT NULL DEFAULT '1' COMMENT '题型 1:单选 2:多选 3:判断 4:填空 5:简答/主观题',
     `content`     text         NOT NULL COMMENT '题目内容(JSON,含选项)',
     `answer`      text         NOT NULL COMMENT '标准答案',

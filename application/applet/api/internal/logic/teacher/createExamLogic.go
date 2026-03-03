@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,23 @@ func NewCreateExamLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateExamLogic) CreateExam(req *types.CreateExamReq) (resp *types.CreateExamRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.ExamRPC.CreateExam(l.ctx, &exam.CreateExamReq{
+		CourseId:   req.CourseId,
+		Title:      req.Title,
+		TotalScore: req.TotalScore,
+		PassScore:  req.PassScore,
+		Duration:   int32(req.Duration),
+		StartTime:  req.StartTime,
+		EndTime:    req.EndTime,
+		ExamType:   int32(req.ExamType),
+		RuleJson:   req.RuleJson,
+	})
+	if err != nil {
+		l.Errorf("CreateExam error: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.CreateExamRes{
+		Id: rpcResp.Id,
+	}, nil
 }

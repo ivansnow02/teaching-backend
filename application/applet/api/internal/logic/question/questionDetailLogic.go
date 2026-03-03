@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,26 @@ func NewQuestionDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Qu
 }
 
 func (l *QuestionDetailLogic) QuestionDetail(req *types.QuestionDetailReq) (resp *types.QuestionDetailRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.ExamRPC.QuestionDetail(l.ctx, &exam.QuestionDetailReq{
+		Id: req.Id,
+	})
+	if err != nil {
+		l.Errorf("QuestionDetail error: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.QuestionDetailRes{
+		Question: types.QuestionItem{
+			Id:              rpcResp.Question.Id,
+			CourseId:        rpcResp.Question.CourseId,
+			Type:            int(rpcResp.Question.Type),
+			Content:         rpcResp.Question.Content,
+			Answer:          rpcResp.Question.Answer,
+			Analysis:        rpcResp.Question.Analysis,
+			KnowledgePoints: rpcResp.Question.KnowledgePoints,
+			Score:           rpcResp.Question.Score,
+			Difficulty:      int(rpcResp.Question.Difficulty),
+			CreateTime:      rpcResp.Question.CreateTime,
+		},
+	}, nil
 }

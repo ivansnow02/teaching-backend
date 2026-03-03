@@ -8,6 +8,7 @@ import (
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/application/exam/rpc/exam"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,7 +29,36 @@ func NewQuestionListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ques
 }
 
 func (l *QuestionListLogic) QuestionList(req *types.QuestionListReq) (resp *types.QuestionListRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcResp, err := l.svcCtx.ExamRPC.QuestionList(l.ctx, &exam.QuestionListReq{
+		CourseId:   req.CourseId,
+		Type:       int32(req.Type),
+		Difficulty: int32(req.Difficulty),
+		Page:       int64(req.Page),
+		Size:       int64(req.Size),
+	})
+	if err != nil {
+		l.Errorf("QuestionList error: %v", err)
+		return nil, err
+	}
 
-	return
+	list := make([]types.QuestionItem, 0, len(rpcResp.List))
+	for _, item := range rpcResp.List {
+		list = append(list, types.QuestionItem{
+			Id:              item.Id,
+			CourseId:        item.CourseId,
+			Type:            int(item.Type),
+			Content:         item.Content,
+			Answer:          item.Answer,
+			Analysis:        item.Analysis,
+			KnowledgePoints: item.KnowledgePoints,
+			Score:           item.Score,
+			Difficulty:      int(item.Difficulty),
+			CreateTime:      item.CreateTime,
+		})
+	}
+
+	return &types.QuestionListRes{
+		List:  list,
+		Total: rpcResp.Total,
+	}, nil
 }
