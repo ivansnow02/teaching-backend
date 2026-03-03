@@ -29,4 +29,7 @@ var (
 	CheckEnrollmentFailed = xcode.New(200104, "查询选课状态失败")
 	GetStudentsFailed     = xcode.New(200105, "获取学生列表失败")
 	GetStudentInfoFailed  = xcode.New(200106, "获取学生信息失败")
+
+	// StudyProgress 2002xx
+	UpdateProgressFailed = xcode.New(200201, "更新学习进度失败")
 )

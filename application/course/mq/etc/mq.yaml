@@ -1,0 +1,28 @@
+Name: course.mq
+# Canal Binlog 消费（课件向量化）
+MaterialKq:
+  Name: material-kq
+  Brokers:
+    - 127.0.0.1:9092
+  Group: course-material-group
+  Topic: course-material-topic
+  Offset: last
+  Consumers: 4
+  Processors: 4
+
+# 学习进度消费
+StudyProgressKq:
+  Name: progress-kq
+  Brokers:
+    - 127.0.0.1:9092
+  Group: study-progress-group
+  Topic: study-progress-topic
+  Offset: last
+  Consumers: 4
+  Processors: 4
+
+DataSource: root:root@tcp(127.0.0.1:3306)/teaching_course?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Pass:
+    Type: node
