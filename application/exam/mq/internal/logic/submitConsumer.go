@@ -92,12 +92,18 @@ func (c *SubmitConsumer) Consume(ctx context.Context, key, value string) error {
 		}
 		totalScore += score
 
+		aiStatus := int64(0)
+		if q.Type <= 3 {
+			aiStatus = 1 // 客观题无需 AI 批改，设为已处理
+		}
+
 		// 更新或插入用户答案表
 		ua, err := c.svcCtx.UserAnswerModel.FindOneByRecordIdQuestionId(ctx, record.Id, eq.QuestionId)
 		if err == nil {
 			ua.UserAnswer = sql.NullString{String: userAnswerStr, Valid: true}
 			ua.IsCorrect = isCorrect
 			ua.Score = score
+			ua.AiStatus = aiStatus
 			_ = c.svcCtx.UserAnswerModel.Update(ctx, ua)
 		} else {
 			_, _ = c.svcCtx.UserAnswerModel.Insert(ctx, &model.UserAnswer{
@@ -106,7 +112,7 @@ func (c *SubmitConsumer) Consume(ctx context.Context, key, value string) error {
 				UserAnswer: sql.NullString{String: userAnswerStr, Valid: true},
 				IsCorrect:  isCorrect,
 				Score:      score,
-				AiStatus:   0,
+				AiStatus:   aiStatus,
 			})
 		}
 	}

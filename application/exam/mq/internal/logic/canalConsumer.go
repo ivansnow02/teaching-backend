@@ -32,6 +32,8 @@ func (c *CanalConsumer) Consume(ctx context.Context, key, value string) error {
 		return nil
 	}
 
+	logx.Infof("CanalConsumer 收到消息: DB=%s, Table=%s, Type=%s", msg.Database, msg.Table, msg.Type)
+
 	// 过滤需要的表和类型
 	if msg.Database != "teaching_exam" {
 		return nil
@@ -127,7 +129,48 @@ func (c *CanalConsumer) handleUserAnswer(ctx context.Context, msg kafkatypes.Can
 			_ = c.svcCtx.UserAnswerModel.Update(context.Background(), uaUpdate)
 
 			logx.Infof("CanalConsumer: AI 批改记录(id=%d)完成", uaId)
+
+			// 检查是否全卷批改完成，并更新总分
+			c.checkAndFinalizeExam(context.Background(), uaUpdate.RecordId)
 		}(id)
 	}
 	return nil
+}
+
+func (c *CanalConsumer) checkAndFinalizeExam(ctx context.Context, recordId uint64) {
+	// 1. 获取该记录下所有的回答
+	answers, err := c.svcCtx.UserAnswerModel.FindListByRecordId(ctx, recordId)
+	if err != nil {
+		logx.Errorf("checkAndFinalizeExam: FindListByRecordId(record_id=%d) error: %v", recordId, err)
+		return
+	}
+
+	// 2. 检查是否还有题目处于待批改状态 (ai_status == 0)
+	var totalScore float64
+	allCompleted := true
+	for _, ans := range answers {
+		if ans.AiStatus == 0 {
+			allCompleted = false
+			break
+		}
+		totalScore += ans.Score
+	}
+
+	// 3. 如果全部完成，更新考试记录
+	if allCompleted {
+		record, err := c.svcCtx.UserExamRecordModel.FindOne(ctx, recordId)
+		if err != nil {
+			logx.Errorf("checkAndFinalizeExam: FindOne record error: %v", err)
+			return
+		}
+
+		record.Score = totalScore
+		record.Status = 2 // 已完成
+		err = c.svcCtx.UserExamRecordModel.Update(ctx, record)
+		if err != nil {
+			logx.Errorf("checkAndFinalizeExam: Update record error: %v", err)
+			return
+		}
+		logx.Infof("checkAndFinalizeExam: 考试记录(id=%d)已全卷批改完成，最终得分: %v", recordId, totalScore)
+	}
 }
