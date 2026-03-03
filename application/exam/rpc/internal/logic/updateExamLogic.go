@@ -64,5 +64,8 @@ func (l *UpdateExamLogic) UpdateExam(in *pb.UpdateExamReq) (*pb.UpdateExamRes, e
 		return nil, xcode.ServerErr
 	}
 
+	// 试卷信息变更，清除 ExamDetail 缓存
+	InvalidateExamDetailCache(l.ctx, l.svcCtx, in.Id)
+
 	return &pb.UpdateExamRes{}, nil
 }

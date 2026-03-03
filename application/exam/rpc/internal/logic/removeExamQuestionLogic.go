@@ -38,5 +38,8 @@ func (l *RemoveExamQuestionLogic) RemoveExamQuestion(in *pb.RemoveExamQuestionRe
 		return nil, xcode.ServerErr
 	}
 
+	// 试卷题目变更，清除 ExamDetail 缓存
+	InvalidateExamDetailCache(l.ctx, l.svcCtx, in.ExamId)
+
 	return &pb.RemoveExamQuestionRes{}, nil
 }

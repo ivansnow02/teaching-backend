@@ -4,8 +4,8 @@ import (
 	"context"
 	"strconv"
 	"teaching-backend/application/exam/rpc/internal/code"
-	"teaching-backend/application/exam/rpc/model"
 	"teaching-backend/application/exam/rpc/internal/svc"
+	"teaching-backend/application/exam/rpc/model"
 	"teaching-backend/application/exam/rpc/pb"
 	"teaching-backend/pkg/xcode"
 
@@ -54,6 +54,9 @@ func (l *AddExamQuestionLogic) AddExamQuestion(in *pb.AddExamQuestionReq) (*pb.A
 		l.Errorf("ExamQuestionModel.Insert error: %v", err)
 		return nil, xcode.ServerErr
 	}
+
+	// 试卷题目变更，清除 ExamDetail 缓存
+	InvalidateExamDetailCache(l.ctx, l.svcCtx, in.ExamId)
 
 	return &pb.AddExamQuestionRes{}, nil
 }
