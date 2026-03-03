@@ -41,6 +41,14 @@ type ChapterListRes struct {
 	List []ChapterItem `json:"list"`
 }
 
+type CheckEnrollmentReq struct {
+	CourseId int64 `form:"course_id"`
+}
+
+type CheckEnrollmentRes struct {
+	IsEnrolled bool `json:"is_enrolled"`
+}
+
 type CourseDetailReq struct {
 	Id int64 `path:"id"`
 }
@@ -68,6 +76,25 @@ type CourseListReq struct {
 type CourseListRes struct {
 	List  []CourseItem `json:"list"`
 	Total int64        `json:"total"`
+}
+
+type CourseStudentItem struct {
+	UserId     int64  `json:"user_id"`
+	Nickname   string `json:"nickname"`
+	Avatar     string `json:"avatar"`
+	Email      string `json:"email"`
+	EnrollTime int64  `json:"enroll_time"`
+}
+
+type CourseStudentsReq struct {
+	CourseId int64 `form:"course_id"`
+	Page     int   `form:"page,default=1"`
+	Size     int   `form:"size,default=10"`
+}
+
+type CourseStudentsRes struct {
+	List  []CourseStudentItem `json:"list"`
+	Total int64               `json:"total"`
 }
 
 type CreateChapterReq struct {
@@ -155,7 +182,25 @@ type DeleteQuestionReq struct {
 	Id int64 `path:"id"`
 }
 
+type DropCourseReq struct {
+	CourseId int64 `json:"course_id"`
+}
+
 type Empty struct {
+}
+
+type EnrollCourseReq struct {
+	CourseId int64 `json:"course_id"`
+}
+
+type EnrollmentCourseItem struct {
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Cover       string `json:"cover"`
+	Description string `json:"description"`
+	TeacherId   int64  `json:"teacher_id"`
+	Status      int    `json:"status"`
+	EnrollTime  int64  `json:"enroll_time"`
 }
 
 type ExamDetailReq struct {
@@ -296,6 +341,16 @@ type MaterialListReq struct {
 
 type MaterialListRes struct {
 	List []MaterialItem `json:"list"`
+}
+
+type MyEnrollmentListReq struct {
+	Page int `form:"page,default=1"`
+	Size int `form:"size,default=10"`
+}
+
+type MyEnrollmentListRes struct {
+	List  []EnrollmentCourseItem `json:"list"`
+	Total int64                  `json:"total"`
 }
 
 type QuestionDetailReq struct {

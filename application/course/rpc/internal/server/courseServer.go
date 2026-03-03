@@ -106,3 +106,33 @@ func (s *CourseServer) GetStudyProgress(ctx context.Context, in *pb.GetStudyProg
 	l := logic.NewGetStudyProgressLogic(ctx, s.svcCtx)
 	return l.GetStudyProgress(in)
 }
+
+// 选课
+func (s *CourseServer) EnrollCourse(ctx context.Context, in *pb.EnrollCourseReq) (*pb.EnrollCourseRes, error) {
+	l := logic.NewEnrollCourseLogic(ctx, s.svcCtx)
+	return l.EnrollCourse(in)
+}
+
+// 退课
+func (s *CourseServer) DropCourse(ctx context.Context, in *pb.DropCourseReq) (*pb.DropCourseRes, error) {
+	l := logic.NewDropCourseLogic(ctx, s.svcCtx)
+	return l.DropCourse(in)
+}
+
+// 获取学生已选课程列表
+func (s *CourseServer) GetEnrollmentList(ctx context.Context, in *pb.GetEnrollmentListReq) (*pb.GetEnrollmentListRes, error) {
+	l := logic.NewGetEnrollmentListLogic(ctx, s.svcCtx)
+	return l.GetEnrollmentList(in)
+}
+
+// 检查是否已选课
+func (s *CourseServer) CheckEnrollment(ctx context.Context, in *pb.CheckEnrollmentReq) (*pb.CheckEnrollmentRes, error) {
+	l := logic.NewCheckEnrollmentLogic(ctx, s.svcCtx)
+	return l.CheckEnrollment(in)
+}
+
+// 获取课程已选学生列表（教师用）
+func (s *CourseServer) GetCourseStudents(ctx context.Context, in *pb.GetCourseStudentsReq) (*pb.GetCourseStudentsRes, error) {
+	l := logic.NewGetCourseStudentsLogic(ctx, s.svcCtx)
+	return l.GetCourseStudents(in)
+}

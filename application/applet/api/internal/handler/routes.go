@@ -9,6 +9,7 @@ import (
 	ai "teaching-backend/application/applet/api/internal/handler/ai"
 	chapter "teaching-backend/application/applet/api/internal/handler/chapter"
 	course "teaching-backend/application/applet/api/internal/handler/course"
+	enrollment "teaching-backend/application/applet/api/internal/handler/enrollment"
 	exam "teaching-backend/application/applet/api/internal/handler/exam"
 	examRecord "teaching-backend/application/applet/api/internal/handler/examRecord"
 	material "teaching-backend/application/applet/api/internal/handler/material"
@@ -62,6 +63,37 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodGet,
 				Path:    "/course/list",
 				Handler: course.CourseListHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/v1"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 检查是否已选课
+				Method:  http.MethodGet,
+				Path:    "/enrollment/check",
+				Handler: enrollment.CheckEnrollmentHandler(serverCtx),
+			},
+			{
+				// 学生退课
+				Method:  http.MethodPost,
+				Path:    "/enrollment/drop",
+				Handler: enrollment.DropCourseHandler(serverCtx),
+			},
+			{
+				// 学生选课
+				Method:  http.MethodPost,
+				Path:    "/enrollment/enroll",
+				Handler: enrollment.EnrollCourseHandler(serverCtx),
+			},
+			{
+				// 我的选课列表
+				Method:  http.MethodGet,
+				Path:    "/enrollment/list",
+				Handler: enrollment.MyEnrollmentListHandler(serverCtx),
 			},
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -245,6 +277,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodDelete,
 					Path:    "/course/delete/:id",
 					Handler: teacher.DeleteCourseHandler(serverCtx),
+				},
+				{
+					// 查看课程已选学生列表(教师)
+					Method:  http.MethodGet,
+					Path:    "/course/students",
+					Handler: teacher.CourseStudentsHandler(serverCtx),
 				},
 				{
 					// 更新课程(教师)

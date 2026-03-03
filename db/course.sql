@@ -61,3 +61,16 @@ CREATE TABLE `study_progress` (
     UNIQUE KEY `uk_user_material` (`user_id`, `material_id`),
     KEY `ix_user_course` (`user_id`, `course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='学习进度表';
+
+-- 学生选课表
+CREATE TABLE `course_enrollment` (
+    `id`          bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `user_id`     bigint(20) UNSIGNED NOT NULL COMMENT '学生ID',
+    `course_id`   bigint(20) UNSIGNED NOT NULL COMMENT '课程ID',
+    `status`      tinyint(4)   NOT NULL DEFAULT '1' COMMENT '状态 1:已选 2:已退',
+    `create_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '选课时间',
+    `update_time` timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_user_course` (`user_id`, `course_id`),
+    KEY `ix_course_id` (`course_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin COMMENT='学生选课表';

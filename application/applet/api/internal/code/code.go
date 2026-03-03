@@ -21,4 +21,12 @@ var (
 	NoPermission       = xcode.New(200005, "无权操作该资源")
 	ChapterTitleEmpty  = xcode.New(200006, "章节标题不能为空")
 	MaterialTitleEmpty = xcode.New(200007, "课件标题不能为空")
+
+	// Enrollment 2001xx
+	CourseEnrollFailed    = xcode.New(200101, "选课失败")
+	CourseDropFailed      = xcode.New(200102, "退课失败")
+	GetEnrollmentFailed   = xcode.New(200103, "获取选课列表失败")
+	CheckEnrollmentFailed = xcode.New(200104, "查询选课状态失败")
+	GetStudentsFailed     = xcode.New(200105, "获取学生列表失败")
+	GetStudentInfoFailed  = xcode.New(200106, "获取学生信息失败")
 )

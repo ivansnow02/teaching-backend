@@ -203,6 +203,62 @@ type GetStudyProgressRes {
 	List []StudyProgressItem `json:"list"`
 }
 
+// ---------- 选课 ----------
+type EnrollCourseReq {
+	CourseId int64 `json:"course_id"`
+}
+
+type DropCourseReq {
+	CourseId int64 `json:"course_id"`
+}
+
+type EnrollmentCourseItem {
+	Id          int64  `json:"id"`
+	Title       string `json:"title"`
+	Cover       string `json:"cover"`
+	Description string `json:"description"`
+	TeacherId   int64  `json:"teacher_id"`
+	Status      int    `json:"status"`
+	EnrollTime  int64  `json:"enroll_time"`
+}
+
+type MyEnrollmentListReq {
+	Page int `form:"page,default=1"`
+	Size int `form:"size,default=10"`
+}
+
+type MyEnrollmentListRes {
+	List  []EnrollmentCourseItem `json:"list"`
+	Total int64                  `json:"total"`
+}
+
+type CheckEnrollmentReq {
+	CourseId int64 `form:"course_id"`
+}
+
+type CheckEnrollmentRes {
+	IsEnrolled bool `json:"is_enrolled"`
+}
+
+type CourseStudentsReq {
+	CourseId int64 `form:"course_id"`
+	Page     int   `form:"page,default=1"`
+	Size     int   `form:"size,default=10"`
+}
+
+type CourseStudentItem {
+	UserId     int64  `json:"user_id"`
+	Nickname   string `json:"nickname"`
+	Avatar     string `json:"avatar"`
+	Email      string `json:"email"`
+	EnrollTime int64  `json:"enroll_time"`
+}
+
+type CourseStudentsRes {
+	List  []CourseStudentItem `json:"list"`
+	Total int64               `json:"total"`
+}
+
 // ---------- 题库 ----------
 type QuestionItem {
 	Id              int64  `json:"id"`
@@ -566,6 +622,29 @@ service applet-api {
 @server (
 	jwt:    Auth
 	prefix: /v1
+	group:  enrollment
+)
+service applet-api {
+	@doc "学生选课"
+	@handler EnrollCourse
+	post /enrollment/enroll (EnrollCourseReq) returns (Empty)
+
+	@doc "学生退课"
+	@handler DropCourse
+	post /enrollment/drop (DropCourseReq) returns (Empty)
+
+	@doc "我的选课列表"
+	@handler MyEnrollmentList
+	get /enrollment/list (MyEnrollmentListReq) returns (MyEnrollmentListRes)
+
+	@doc "检查是否已选课"
+	@handler CheckEnrollment
+	get /enrollment/check (CheckEnrollmentReq) returns (CheckEnrollmentRes)
+}
+
+@server (
+	jwt:    Auth
+	prefix: /v1
 	group:  question
 )
 service applet-api {
@@ -719,5 +798,9 @@ service applet-api {
 	@doc "查询 AI 异步生成任务状态"
 	@handler GetAiTaskStatus
 	get /ai/task/status/:task_id (GetAiTaskStatusReq) returns (GetAiTaskStatusRes)
+
+	@doc "查看课程已选学生列表(教师)"
+	@handler CourseStudents
+	get /course/students (CourseStudentsReq) returns (CourseStudentsRes)
 }
 

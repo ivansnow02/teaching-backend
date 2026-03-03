@@ -17,11 +17,14 @@ type (
 	ChapterItem            = pb.ChapterItem
 	ChapterListReq         = pb.ChapterListReq
 	ChapterListRes         = pb.ChapterListRes
+	CheckEnrollmentReq     = pb.CheckEnrollmentReq
+	CheckEnrollmentRes     = pb.CheckEnrollmentRes
 	CourseDetailReq        = pb.CourseDetailReq
 	CourseDetailRes        = pb.CourseDetailRes
 	CourseItem             = pb.CourseItem
 	CourseListReq          = pb.CourseListReq
 	CourseListRes          = pb.CourseListRes
+	CourseStudentItem      = pb.CourseStudentItem
 	CreateChapterReq       = pb.CreateChapterReq
 	CreateChapterRes       = pb.CreateChapterRes
 	CreateCourseReq        = pb.CreateCourseReq
@@ -34,6 +37,15 @@ type (
 	DeleteCourseRes        = pb.DeleteCourseRes
 	DeleteMaterialReq      = pb.DeleteMaterialReq
 	DeleteMaterialRes      = pb.DeleteMaterialRes
+	DropCourseReq          = pb.DropCourseReq
+	DropCourseRes          = pb.DropCourseRes
+	EnrollCourseReq        = pb.EnrollCourseReq
+	EnrollCourseRes        = pb.EnrollCourseRes
+	EnrollmentItem         = pb.EnrollmentItem
+	GetCourseStudentsReq   = pb.GetCourseStudentsReq
+	GetCourseStudentsRes   = pb.GetCourseStudentsRes
+	GetEnrollmentListReq   = pb.GetEnrollmentListReq
+	GetEnrollmentListRes   = pb.GetEnrollmentListRes
 	GetStudyProgressReq    = pb.GetStudyProgressReq
 	GetStudyProgressRes    = pb.GetStudyProgressRes
 	MaterialItem           = pb.MaterialItem
@@ -76,6 +88,16 @@ type (
 		UpdateStudyProgress(ctx context.Context, in *UpdateStudyProgressReq, opts ...grpc.CallOption) (*UpdateStudyProgressRes, error)
 		// 获取学习进度
 		GetStudyProgress(ctx context.Context, in *GetStudyProgressReq, opts ...grpc.CallOption) (*GetStudyProgressRes, error)
+		// 选课
+		EnrollCourse(ctx context.Context, in *EnrollCourseReq, opts ...grpc.CallOption) (*EnrollCourseRes, error)
+		// 退课
+		DropCourse(ctx context.Context, in *DropCourseReq, opts ...grpc.CallOption) (*DropCourseRes, error)
+		// 获取学生已选课程列表
+		GetEnrollmentList(ctx context.Context, in *GetEnrollmentListReq, opts ...grpc.CallOption) (*GetEnrollmentListRes, error)
+		// 检查是否已选课
+		CheckEnrollment(ctx context.Context, in *CheckEnrollmentReq, opts ...grpc.CallOption) (*CheckEnrollmentRes, error)
+		// 获取课程已选学生列表（教师用）
+		GetCourseStudents(ctx context.Context, in *GetCourseStudentsReq, opts ...grpc.CallOption) (*GetCourseStudentsRes, error)
 	}
 
 	defaultCourse struct {
@@ -171,4 +193,34 @@ func (m *defaultCourse) UpdateStudyProgress(ctx context.Context, in *UpdateStudy
 func (m *defaultCourse) GetStudyProgress(ctx context.Context, in *GetStudyProgressReq, opts ...grpc.CallOption) (*GetStudyProgressRes, error) {
 	client := pb.NewCourseClient(m.cli.Conn())
 	return client.GetStudyProgress(ctx, in, opts...)
+}
+
+// 选课
+func (m *defaultCourse) EnrollCourse(ctx context.Context, in *EnrollCourseReq, opts ...grpc.CallOption) (*EnrollCourseRes, error) {
+	client := pb.NewCourseClient(m.cli.Conn())
+	return client.EnrollCourse(ctx, in, opts...)
+}
+
+// 退课
+func (m *defaultCourse) DropCourse(ctx context.Context, in *DropCourseReq, opts ...grpc.CallOption) (*DropCourseRes, error) {
+	client := pb.NewCourseClient(m.cli.Conn())
+	return client.DropCourse(ctx, in, opts...)
+}
+
+// 获取学生已选课程列表
+func (m *defaultCourse) GetEnrollmentList(ctx context.Context, in *GetEnrollmentListReq, opts ...grpc.CallOption) (*GetEnrollmentListRes, error) {
+	client := pb.NewCourseClient(m.cli.Conn())
+	return client.GetEnrollmentList(ctx, in, opts...)
+}
+
+// 检查是否已选课
+func (m *defaultCourse) CheckEnrollment(ctx context.Context, in *CheckEnrollmentReq, opts ...grpc.CallOption) (*CheckEnrollmentRes, error) {
+	client := pb.NewCourseClient(m.cli.Conn())
+	return client.CheckEnrollment(ctx, in, opts...)
+}
+
+// 获取课程已选学生列表（教师用）
+func (m *defaultCourse) GetCourseStudents(ctx context.Context, in *GetCourseStudentsReq, opts ...grpc.CallOption) (*GetCourseStudentsRes, error) {
+	client := pb.NewCourseClient(m.cli.Conn())
+	return client.GetCourseStudents(ctx, in, opts...)
 }
