@@ -13,4 +13,9 @@ type Config struct {
 	BizRedis   struct {
 		redis.RedisConf
 	}
+
+	SubmitExamKafka struct {
+		Brokers []string
+		Topic   string
+	}
 }

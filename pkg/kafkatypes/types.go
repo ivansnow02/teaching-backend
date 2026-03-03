@@ -19,3 +19,14 @@ type StudyProgressMsg struct {
 	MaterialId int64 `json:"materialId"`
 	Progress   int32 `json:"progress"`
 }
+
+// SubmitExamMsg 交卷消息结构（exam-rpc 生产 -> exam-mq 消费）
+type SubmitExamMsg struct {
+	RecordId int64              `json:"recordId"`
+	Answers  []SubmitAnswerItem `json:"answers"`
+}
+
+type SubmitAnswerItem struct {
+	QuestionId int64  `json:"questionId"`
+	Answer     string `json:"answer"`
+}

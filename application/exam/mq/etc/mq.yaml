@@ -1,0 +1,34 @@
+Name: exam.mq
+# Canal Binlog 消费 (用于异步 AI 批改)
+CanalKq:
+  Name: exam-canal-kq
+  Brokers:
+    - 127.0.0.1:9092
+  Group: exam-canal-group
+  Topic: exam-binlog-topic
+  Offset: last
+  Consumers: 2
+  Processors: 2
+
+# 考试提交通知消费
+SubmitExamKq:
+  Name: exam-submit-kq
+  Brokers:
+    - 127.0.0.1:9092
+  Group: exam-submit-group
+  Topic: submit-exam-topic
+  Offset: last
+  Consumers: 4
+  Processors: 4
+
+DataSource: root:root@tcp(127.0.0.1:3306)/teaching_exam?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+CacheRedis:
+  - Host: 127.0.0.1:6379
+    Pass:
+    Type: node
+
+ExamRPC:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: exam.rpc

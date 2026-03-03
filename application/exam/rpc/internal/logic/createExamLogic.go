@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"strconv"
 
-	"teaching-backend/application/exam/rpc/internal/model"
+	"teaching-backend/application/exam/rpc/model"
 	"teaching-backend/application/exam/rpc/internal/svc"
 	"teaching-backend/application/exam/rpc/pb"
 	"teaching-backend/pkg/util"

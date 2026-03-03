@@ -36,13 +36,18 @@ func (l *SaveAnswerSnapshotLogic) SaveAnswerSnapshot(in *pb.SaveAnswerSnapshotRe
 		return nil, code.ExamRecordNotFound
 	}
 
-	// 存入Redis快照
+	// 存入Redis快照 (批量操作减少 RTT)
 	key := fmt.Sprintf("exam:snapshot:%d", in.RecordId)
 
-	for _, ans := range in.Answers {
-		err = l.svcCtx.BizRedis.HsetCtx(l.ctx, key, strconv.FormatInt(ans.QuestionId, 10), ans.Answer)
+	if len(in.Answers) > 0 {
+		fields := make(map[string]string)
+		for _, ans := range in.Answers {
+			fields[strconv.FormatInt(ans.QuestionId, 10)] = ans.Answer
+		}
+
+		err = l.svcCtx.BizRedis.HmsetCtx(l.ctx, key, fields)
 		if err != nil {
-			l.Errorf("SaveAnswerSnapshot HsetCtx error: %v", err)
+			l.Errorf("SaveAnswerSnapshot HmsetCtx error: %v", err)
 			return nil, xcode.ServerErr
 		}
 	}
