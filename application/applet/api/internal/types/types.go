@@ -315,6 +315,9 @@ type GetUploadTokenRes struct {
 	AccessKeyId string `json:"access_key_id"`
 	Policy      string `json:"policy"`
 	Signature   string `json:"signature"`
+	Algorithm   string `json:"algorithm"`
+	Date        string `json:"date"`
+	Bucket      string `json:"bucket"`
 	Host        string `json:"host"`
 	Dir         string `json:"dir"`
 }

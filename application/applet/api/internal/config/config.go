@@ -27,4 +27,11 @@ type Config struct {
 		Brokers []string
 		Topic   string
 	}
+	Minio struct {
+		Endpoint        string
+		AccessKeyID     string
+		SecretAccessKey string
+		UseSSL          bool
+		Bucket          string
+	}
 }

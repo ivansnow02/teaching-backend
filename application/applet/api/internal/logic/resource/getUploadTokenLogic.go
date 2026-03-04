@@ -5,10 +5,13 @@ package resource
 
 import (
 	"context"
+	"time"
 
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
+	"teaching-backend/pkg/xcode"
 
+	"github.com/minio/minio-go/v7"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -28,7 +31,36 @@ func NewGetUploadTokenLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ge
 }
 
 func (l *GetUploadTokenLogic) GetUploadToken() (resp *types.GetUploadTokenRes, err error) {
-	// todo: add your logic here and delete this line
+	bucket := l.svcCtx.Config.Minio.Bucket
+	// 设置 dir 为 uploads/yyyy-mm-dd/
+	dir := "uploads/" + time.Now().Format("2006-01-02") + "/"
 
-	return
+	policy := minio.NewPostPolicy()
+	policy.SetBucket(bucket)
+	policy.SetKeyStartsWith(dir)
+	policy.SetExpires(time.Now().Add(time.Hour * 1))
+
+	_, formData, err := l.svcCtx.MinioClient.PresignedPostPolicy(l.ctx, policy)
+	if err != nil {
+		return nil, xcode.ServerErr
+	}
+
+	host := l.svcCtx.Config.Minio.Endpoint
+	if !l.svcCtx.Config.Minio.UseSSL {
+		host = "http://" + host
+	} else {
+		host = "https://" + host
+	}
+	host = host + "/" + bucket
+
+	return &types.GetUploadTokenRes{
+		AccessKeyId: formData["x-amz-credential"],
+		Policy:      formData["policy"],
+		Signature:   formData["x-amz-signature"],
+		Algorithm:   formData["x-amz-algorithm"],
+		Date:        formData["x-amz-date"],
+		Bucket:      bucket,
+		Host:        host,
+		Dir:         dir,
+	}, nil
 }

@@ -16,6 +16,9 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
 type ServiceContext struct {
@@ -27,9 +30,17 @@ type ServiceContext struct {
 	AiRPC               aibridge.AiBridge
 	BizRedis            *redis.Redis
 	StudyProgressPusher *kq.Pusher
+	MinioClient         *minio.Client
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
+	minioClient, err := minio.New(c.Minio.Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(c.Minio.AccessKeyID, c.Minio.SecretAccessKey, ""),
+		Secure: c.Minio.UseSSL,
+	})
+	if err != nil {
+		panic(err)
+	}
 
 	userRPC := zrpc.MustNewClient(c.UserRPC, zrpc.WithUnaryClientInterceptor(interceptors.ClientErrorInterceptor()))
 	courseRPC := zrpc.MustNewClient(c.CourseRPC, zrpc.WithUnaryClientInterceptor(interceptors.ClientErrorInterceptor()))
@@ -44,5 +55,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AiRPC:               aibridge.NewAiBridge(aiRPC),
 		BizRedis:            redis.New(c.BizRedis.Host, redis.WithPass(c.BizRedis.Pass)),
 		StudyProgressPusher: kq.NewPusher(c.StudyProgressKafka.Brokers, c.StudyProgressKafka.Topic),
+		MinioClient:         minioClient,
 	}
 }

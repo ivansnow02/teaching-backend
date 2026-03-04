@@ -3,128 +3,160 @@ syntax = "proto3";
 package ai;
 option go_package = "./pb";
 
+// AiBridge AI 桥接服务，处理 AI 相关的业务逻辑
 service AiBridge {
+  // GradeSubjectiveQuestion 批改单题主观题
   rpc GradeSubjectiveQuestion(GradeSubjectiveQuestionReq) returns(GradeSubjectiveQuestionRes);
+  // GradeExamSubjective 批量批改全卷主观题
   rpc GradeExamSubjective(GradeExamSubjectiveReq) returns(GradeExamSubjectiveRes);
+  // EmbedMaterial 向量化教学材料（用于 RAG）
   rpc EmbedMaterial(EmbedMaterialReq) returns(EmbedMaterialRes);
+  // GetEmbedStatus 获取材料向量化任务进度/状态
   rpc GetEmbedStatus(GetEmbedStatusReq) returns(GetEmbedStatusRes);
+  // AskQuestion 基础 AI 问答
   rpc AskQuestion(AskQuestionReq) returns(AskQuestionRes);
+  // AskQuestionStream 流式 AI 问答
   rpc AskQuestionStream(AskQuestionReq) returns(stream AskQuestionStreamRes);
+  // GenerateQuestions 自动生成题目（单选/简答等）
   rpc GenerateQuestions(GenerateQuestionsReq) returns(GenerateTaskRes);
+  // GenerateCourseOutline 根据主题生成课程大纲
   rpc GenerateCourseOutline(GenerateCourseOutlineReq) returns(GenerateTaskRes);
+  // GenerateCourseware 生成完整课件内容（异步）
   rpc GenerateCourseware(GenerateCoursewareReq) returns(GenerateTaskRes);
+  // GenerateCoursewareStream 流式生成课件内容
   rpc GenerateCoursewareStream(GenerateCoursewareReq) returns(stream GenerateCoursewareStreamRes);
+  // GetAiTaskStatus 获取异步 AI 任务（如生成课件）的执行状态
   rpc GetAiTaskStatus(GetAiTaskStatusReq) returns(GetAiTaskStatusRes);
 }
 
+// SubjectiveQuestionInput 主观题输入数据结构
 message SubjectiveQuestionInput {
-  int64  record_id        = 1;
-  int64  question_id      = 2;
-  string question_content = 3;
-  string standard_answer  = 4;
-  string knowledge_points = 5;
-  string user_answer      = 6;
-  string max_score        = 7;
+  int64  record_id        = 1; // 考试记录 ID
+  int64  question_id      = 2; // 题目 ID
+  string question_content = 3; // 题目正文
+  string standard_answer  = 4; // 标准参考答案
+  string knowledge_points = 5; // 考察知识点
+  string user_answer      = 6; // 用户提交答案
+  string max_score        = 7; // 总分
 }
 
+// GradeSubjectiveQuestionReq 批改单题主观题请求
 message GradeSubjectiveQuestionReq { SubjectiveQuestionInput input = 1; }
 
+// GradeSubjectiveQuestionRes 批改单题主观题返回
 message GradeSubjectiveQuestionRes {
-  int64  question_id = 1;
-  string score       = 2;
-  int32  is_correct  = 3;
-  string ai_comment  = 4;
+  int64  question_id = 1; // 题目 ID
+  string score       = 2; // AI 评分
+  int32  is_correct  = 3; // 是否正确（部分对/全对/错）
+  string ai_comment  = 4; // AI 批语
 }
 
+// GradeExamSubjectiveReq 批量批改试卷主观题请求
 message GradeExamSubjectiveReq {
-  int64                            record_id = 1;
-  int64                            exam_id   = 2;
-  int64                            user_id   = 3;
-  repeated SubjectiveQuestionInput questions = 4;
+  int64                            record_id = 1; // 考试记录 ID
+  int64                            exam_id   = 2; // 试卷 ID
+  int64                            user_id   = 3; // 考生 ID
+  repeated SubjectiveQuestionInput questions = 4; // 主观题列表
 }
 
+// GradeExamSubjectiveRes 批量批改试卷主观题返回
 message GradeExamSubjectiveRes { repeated GradeSubjectiveQuestionRes results = 1; }
 
+// EmbedMaterialReq 向量化教学材料请求
 message EmbedMaterialReq {
-  int64  material_id = 1;
-  int64  course_id   = 2;
-  string title       = 3;
-  string url         = 4;
-  int32  type        = 5;
+  int64  material_id = 1; // 材料 ID
+  int64  course_id   = 2; // 归属课程 ID
+  string title       = 3; // 材料标题
+  string url         = 4; // 材料文件地址（OSS）
+  int32  type        = 5; // 材料类型（1: PDF, 2: Docx, 3: Text）
 }
 
+// EmbedMaterialRes 向量化请求提交响应
 message EmbedMaterialRes { bool accepted = 1; }
 
+// GetEmbedStatusReq 获取材料向量化状态请求
 message GetEmbedStatusReq { int64 material_id = 1; }
 
+// GetEmbedStatusRes 获取材料向量化状态返回
 message GetEmbedStatusRes {
-  int32  ai_status = 1;
-  string message   = 2;
+  int32  ai_status = 1; // 状态：0-待处理，1-处理中，2-已完成，3-失败
+  string message   = 2; // 失败时的错误信息
 }
 
+// AskQuestionReq AI 问答请求（支持 RAG）
 message AskQuestionReq {
-  int64           course_id  = 1;
-  int64           user_id    = 2;
-  string          question   = 3;
-  repeated string history    = 4;
-  string          session_id = 5; // 多轮对话标识；为空则服务端新建会话
+  int64           course_id  = 1; // 课程 ID，用于定位 RAG 资料库
+  int64           user_id    = 2; // 用户 ID
+  string          question   = 3; // 用户提问内容
+  repeated string history    = 4; // 历史对话往来（用于上下文）
+  string          session_id = 5; // 对话会话标识；为空则服务端新建会话
 }
 
+// AskQuestionRes AI 问答普通回答
 message AskQuestionRes {
-  string          answer  = 1;
-  repeated string sources = 2;
+  string          answer  = 1; // AI 回答正文
+  repeated string sources = 2; // RAG 引用的来源（材料 URL 等）
 }
 
+// AskQuestionStreamRes AI 问答流式回答帧
 message AskQuestionStreamRes {
-  string          delta      = 1;
-  repeated string sources    = 2;
-  bool            finished   = 3;
-  string          session_id = 4; // 首帧返回，客户端保存用于后续多轮
+  string          delta      = 1; // 当前帧增加的文本内容
+  repeated string sources    = 2; // 引用来源（仅首帧或末帧返回）
+  bool            finished   = 3; // 是否回答结束
+  string          session_id = 4; // 会话 ID（仅首帧返回，客户端需保存用于后续多轮）
 }
 
+// GenerateCoursewareStreamRes 流式课件生成帧
 message GenerateCoursewareStreamRes {
-  string delta      = 1;
-  bool   finished   = 2;
-  string session_id = 3; // 首帧返回
+  string delta      = 1; // 当前帧增加的 Markdown 文本
+  bool   finished   = 2; // 是否生成结束
+  string session_id = 3; // 课件关联的会话 ID
 }
 
+// GenerateQuestionsReq 自动生成题目请求
 message GenerateQuestionsReq {
-  int64  course_id        = 1;
-  string knowledge_points = 2;
-  int32  count            = 3;
-  int32  type             = 4;
-  int32  difficulty       = 5;
+  int64  course_id        = 1; // 关联课程 ID
+  string knowledge_points = 2; // 指定考察知识点
+  int32  count            = 3; // 题目数量
+  int32  type             = 4; // 题目类型（1: 单选, 2: 填空, 3: 简答）
+  int32  difficulty       = 5; // 难度等级（1-5）
 }
 
+// GeneratedQuestion 单个生成的题目数据
 message GeneratedQuestion {
-  string content          = 1;
-  string answer           = 2;
-  string analysis         = 3;
-  string knowledge_points = 4;
-  string score            = 5;
-  int32  type             = 6;
-  int32  difficulty       = 7;
+  string content          = 1; // 题目正文（含选项）
+  string answer           = 2; // 题目答案
+  string analysis         = 3; // 详细解析
+  string knowledge_points = 4; // 关联知识点
+  string score            = 5; // 建议分值
+  int32  type             = 6; // 题目类型
+  int32  difficulty       = 7; // 难度
 }
 
+// GenerateCourseOutlineReq 生成课程大纲请求
 message GenerateCourseOutlineReq {
-  int64  course_id    = 1;
-  string topic        = 2;
-  string requirements = 3;
+  int64  course_id    = 1; // 课程 ID
+  string topic        = 2; // 课程核心主题
+  string requirements = 3; // 教师备注/额外要求
 }
 
+// GenerateCoursewareReq 生成课件内容请求
 message GenerateCoursewareReq {
-  int64  chapter_id   = 1;
-  string requirements = 2;
-  int64  user_id      = 3; // 用于 session 隔离
-  string session_id   = 4; // 多轮对话标识；为空则服务端新建会话
+  int64  chapter_id   = 1; // 章节 ID
+  string requirements = 2; // 课件生成具体要求
+  int64  user_id      = 3; // 请求用户 ID
+  string session_id   = 4; // 多轮对话标识
 }
 
+// GenerateTaskRes 异步任务提交响应
 message GenerateTaskRes { string task_id = 1; }
 
+// GetAiTaskStatusReq 查询 AI 任务状态请求
 message GetAiTaskStatusReq { string task_id = 1; }
 
+// GetAiTaskStatusRes 查询 AI 任务状态响应
 message GetAiTaskStatusRes {
-  int32  status  = 1;
-  string result  = 2;
-  string message = 3;
+  int32  status  = 1; // 状态：0-进行中，1-成功，2-失败
+  string result  = 2; // 任务结果（例如生成的 Markdown 课件）
+  string message = 3; // 异常/辅助信息
 }
