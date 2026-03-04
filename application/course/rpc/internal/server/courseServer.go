@@ -95,6 +95,12 @@ func (s *CourseServer) DeleteMaterial(ctx context.Context, in *pb.DeleteMaterial
 	return l.DeleteMaterial(in)
 }
 
+// 更新课件AI处理状态
+func (s *CourseServer) UpdateMaterialAiStatus(ctx context.Context, in *pb.UpdateMaterialAiStatusReq) (*pb.UpdateMaterialAiStatusRes, error) {
+	l := logic.NewUpdateMaterialAiStatusLogic(ctx, s.svcCtx)
+	return l.UpdateMaterialAiStatus(in)
+}
+
 // 更新学习进度
 func (s *CourseServer) UpdateStudyProgress(ctx context.Context, in *pb.UpdateStudyProgressReq) (*pb.UpdateStudyProgressRes, error) {
 	l := logic.NewUpdateStudyProgressLogic(ctx, s.svcCtx)

@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"strconv"
 
+	"teaching-backend/application/ai/rpc/aibridge"
 	"teaching-backend/application/course/mq/internal/svc"
+	"teaching-backend/application/course/rpc/course"
 	"teaching-backend/pkg/kafkatypes"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -52,34 +54,53 @@ func (c *MaterialConsumer) Consume(ctx context.Context, key, value string) error
 	return nil
 }
 
-// processMaterial 处理单条课件数据，触发 AI 向量化
 func (c *MaterialConsumer) processMaterial(ctx context.Context, row map[string]any) error {
 	idStr, _ := row["id"].(string)
 	id, _ := strconv.ParseInt(idStr, 10, 64)
 	url, _ := row["url"].(string)
-	fileHash, _ := row["file_hash"].(string)
+	courseIdStr, _ := row["course_id"].(string)
+	courseId, _ := strconv.ParseInt(courseIdStr, 10, 64)
+	title, _ := row["title"].(string)
+	typeStr, _ := row["type"].(string)
+	materialType, _ := strconv.Atoi(typeStr)
 
 	if id == 0 || url == "" {
 		return nil
 	}
 
-	logx.Infof("触发课件向量化: id=%d, url=%s, fileHash=%s", id, url, fileHash)
+	logx.Infof("触发课件向量化: id=%d, url=%s, type=%d, title=%s, courseId=%d", id, url, materialType, title, courseId)
 
-	// TODO: 调用 AI RPC 进行向量化处理
-	// aiResp, err := c.svcCtx.AiRPC.Vectorize(ctx, &ai.VectorizeReq{
-	//     FileUrl:  url,
-	//     FileHash: fileHash,
-	// })
-	// if err != nil {
-	//     return fmt.Errorf("调用 AI RPC 失败: %w", err)
-	// }
+	// 调用 AI RPC 进行向量化处理
+	_, err := c.svcCtx.AiRPC.EmbedMaterial(ctx, &aibridge.EmbedMaterialReq{
+		MaterialId: id,
+		CourseId:   courseId,
+		Title:      title,
+		Url:        url,
+		Type:       int32(materialType),
+	})
+	if err != nil {
+		logx.Errorf("调用 AI RPC 失败 material_id: %d err: %v", id, err)
+		// 修改数据库状态为失败
+		_, dbErr := c.svcCtx.CourseRPC.UpdateMaterialAiStatus(ctx, &course.UpdateMaterialAiStatusReq{
+			MaterialId: id,
+			AiStatus:   3,
+		})
+		if dbErr != nil {
+			logx.Errorf("更新课件 ai_status 失败 material_id: %d err: %v", id, dbErr)
+		}
+		// 消费异常通常不阻塞进度，所以只打印日志
+		return nil
+	}
 
-	// 更新课件的 ai_status（1=处理中, 2=已完成）
-	_, err := c.svcCtx.Conn.ExecCtx(ctx, "update `course_material` set `ai_status` = ? where `id` = ?", 1, id)
+	// 更新课件的 ai_status（1=处理中）
+	_, err = c.svcCtx.CourseRPC.UpdateMaterialAiStatus(ctx, &course.UpdateMaterialAiStatusReq{
+		MaterialId: id,
+		AiStatus:   1,
+	})
 	if err != nil {
 		return fmt.Errorf("更新课件 ai_status 失败: %w", err)
 	}
 
-	logx.Infof("课件 id=%d 已标记为处理中", id)
+	logx.Infof("课件 id=%d 已提交向量化并标记为处理中", id)
 	return nil
 }

@@ -14,50 +14,52 @@ import (
 )
 
 type (
-	ChapterItem            = pb.ChapterItem
-	ChapterListReq         = pb.ChapterListReq
-	ChapterListRes         = pb.ChapterListRes
-	CheckEnrollmentReq     = pb.CheckEnrollmentReq
-	CheckEnrollmentRes     = pb.CheckEnrollmentRes
-	CourseDetailReq        = pb.CourseDetailReq
-	CourseDetailRes        = pb.CourseDetailRes
-	CourseItem             = pb.CourseItem
-	CourseListReq          = pb.CourseListReq
-	CourseListRes          = pb.CourseListRes
-	CourseStudentItem      = pb.CourseStudentItem
-	CreateChapterReq       = pb.CreateChapterReq
-	CreateChapterRes       = pb.CreateChapterRes
-	CreateCourseReq        = pb.CreateCourseReq
-	CreateCourseRes        = pb.CreateCourseRes
-	CreateMaterialReq      = pb.CreateMaterialReq
-	CreateMaterialRes      = pb.CreateMaterialRes
-	DeleteChapterReq       = pb.DeleteChapterReq
-	DeleteChapterRes       = pb.DeleteChapterRes
-	DeleteCourseReq        = pb.DeleteCourseReq
-	DeleteCourseRes        = pb.DeleteCourseRes
-	DeleteMaterialReq      = pb.DeleteMaterialReq
-	DeleteMaterialRes      = pb.DeleteMaterialRes
-	DropCourseReq          = pb.DropCourseReq
-	DropCourseRes          = pb.DropCourseRes
-	EnrollCourseReq        = pb.EnrollCourseReq
-	EnrollCourseRes        = pb.EnrollCourseRes
-	EnrollmentItem         = pb.EnrollmentItem
-	GetCourseStudentsReq   = pb.GetCourseStudentsReq
-	GetCourseStudentsRes   = pb.GetCourseStudentsRes
-	GetEnrollmentListReq   = pb.GetEnrollmentListReq
-	GetEnrollmentListRes   = pb.GetEnrollmentListRes
-	GetStudyProgressReq    = pb.GetStudyProgressReq
-	GetStudyProgressRes    = pb.GetStudyProgressRes
-	MaterialItem           = pb.MaterialItem
-	MaterialListReq        = pb.MaterialListReq
-	MaterialListRes        = pb.MaterialListRes
-	StudyProgressItem      = pb.StudyProgressItem
-	UpdateChapterReq       = pb.UpdateChapterReq
-	UpdateChapterRes       = pb.UpdateChapterRes
-	UpdateCourseReq        = pb.UpdateCourseReq
-	UpdateCourseRes        = pb.UpdateCourseRes
-	UpdateStudyProgressReq = pb.UpdateStudyProgressReq
-	UpdateStudyProgressRes = pb.UpdateStudyProgressRes
+	ChapterItem               = pb.ChapterItem
+	ChapterListReq            = pb.ChapterListReq
+	ChapterListRes            = pb.ChapterListRes
+	CheckEnrollmentReq        = pb.CheckEnrollmentReq
+	CheckEnrollmentRes        = pb.CheckEnrollmentRes
+	CourseDetailReq           = pb.CourseDetailReq
+	CourseDetailRes           = pb.CourseDetailRes
+	CourseItem                = pb.CourseItem
+	CourseListReq             = pb.CourseListReq
+	CourseListRes             = pb.CourseListRes
+	CourseStudentItem         = pb.CourseStudentItem
+	CreateChapterReq          = pb.CreateChapterReq
+	CreateChapterRes          = pb.CreateChapterRes
+	CreateCourseReq           = pb.CreateCourseReq
+	CreateCourseRes           = pb.CreateCourseRes
+	CreateMaterialReq         = pb.CreateMaterialReq
+	CreateMaterialRes         = pb.CreateMaterialRes
+	DeleteChapterReq          = pb.DeleteChapterReq
+	DeleteChapterRes          = pb.DeleteChapterRes
+	DeleteCourseReq           = pb.DeleteCourseReq
+	DeleteCourseRes           = pb.DeleteCourseRes
+	DeleteMaterialReq         = pb.DeleteMaterialReq
+	DeleteMaterialRes         = pb.DeleteMaterialRes
+	DropCourseReq             = pb.DropCourseReq
+	DropCourseRes             = pb.DropCourseRes
+	EnrollCourseReq           = pb.EnrollCourseReq
+	EnrollCourseRes           = pb.EnrollCourseRes
+	EnrollmentItem            = pb.EnrollmentItem
+	GetCourseStudentsReq      = pb.GetCourseStudentsReq
+	GetCourseStudentsRes      = pb.GetCourseStudentsRes
+	GetEnrollmentListReq      = pb.GetEnrollmentListReq
+	GetEnrollmentListRes      = pb.GetEnrollmentListRes
+	GetStudyProgressReq       = pb.GetStudyProgressReq
+	GetStudyProgressRes       = pb.GetStudyProgressRes
+	MaterialItem              = pb.MaterialItem
+	MaterialListReq           = pb.MaterialListReq
+	MaterialListRes           = pb.MaterialListRes
+	StudyProgressItem         = pb.StudyProgressItem
+	UpdateChapterReq          = pb.UpdateChapterReq
+	UpdateChapterRes          = pb.UpdateChapterRes
+	UpdateCourseReq           = pb.UpdateCourseReq
+	UpdateCourseRes           = pb.UpdateCourseRes
+	UpdateMaterialAiStatusReq = pb.UpdateMaterialAiStatusReq
+	UpdateMaterialAiStatusRes = pb.UpdateMaterialAiStatusRes
+	UpdateStudyProgressReq    = pb.UpdateStudyProgressReq
+	UpdateStudyProgressRes    = pb.UpdateStudyProgressRes
 
 	Course interface {
 		// 创建课程
@@ -84,6 +86,8 @@ type (
 		MaterialList(ctx context.Context, in *MaterialListReq, opts ...grpc.CallOption) (*MaterialListRes, error)
 		// 删除课件
 		DeleteMaterial(ctx context.Context, in *DeleteMaterialReq, opts ...grpc.CallOption) (*DeleteMaterialRes, error)
+		// 更新课件AI处理状态
+		UpdateMaterialAiStatus(ctx context.Context, in *UpdateMaterialAiStatusReq, opts ...grpc.CallOption) (*UpdateMaterialAiStatusRes, error)
 		// 更新学习进度
 		UpdateStudyProgress(ctx context.Context, in *UpdateStudyProgressReq, opts ...grpc.CallOption) (*UpdateStudyProgressRes, error)
 		// 获取学习进度
@@ -181,6 +185,12 @@ func (m *defaultCourse) MaterialList(ctx context.Context, in *MaterialListReq, o
 func (m *defaultCourse) DeleteMaterial(ctx context.Context, in *DeleteMaterialReq, opts ...grpc.CallOption) (*DeleteMaterialRes, error) {
 	client := pb.NewCourseClient(m.cli.Conn())
 	return client.DeleteMaterial(ctx, in, opts...)
+}
+
+// 更新课件AI处理状态
+func (m *defaultCourse) UpdateMaterialAiStatus(ctx context.Context, in *UpdateMaterialAiStatusReq, opts ...grpc.CallOption) (*UpdateMaterialAiStatusRes, error) {
+	client := pb.NewCourseClient(m.cli.Conn())
+	return client.UpdateMaterialAiStatus(ctx, in, opts...)
 }
 
 // 更新学习进度

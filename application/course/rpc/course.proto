@@ -31,6 +31,8 @@ service Course {
   rpc MaterialList(MaterialListReq) returns(MaterialListRes);
     // 删除课件
   rpc DeleteMaterial(DeleteMaterialReq) returns(DeleteMaterialRes);
+    // 更新课件AI处理状态
+  rpc UpdateMaterialAiStatus(UpdateMaterialAiStatusReq) returns(UpdateMaterialAiStatusRes);
 
     // 更新学习进度
   rpc UpdateStudyProgress(UpdateStudyProgressReq) returns(UpdateStudyProgressRes);
@@ -199,6 +201,13 @@ message DeleteMaterialReq {
 
 message DeleteMaterialRes {}
 
+message UpdateMaterialAiStatusReq {
+  int64 material_id = 1;
+  int32 ai_status   = 2;
+}
+
+message UpdateMaterialAiStatusRes {}
+
 // ============ 学习进度 ============
 
 message UpdateStudyProgressReq {
@@ -221,7 +230,6 @@ message StudyProgressItem {
   int64 chapter_id  = 2;
   int32 progress    = 3;
 }
-
 
 message GetStudyProgressRes {
   repeated StudyProgressItem list = 1;

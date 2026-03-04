@@ -26,3 +26,16 @@ CacheRedis:
   - Host: 127.0.0.1:6379
     Pass:
     Type: node
+
+AiRPC:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: ai.rpc
+
+CourseRPC:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: course.rpc
+
