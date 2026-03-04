@@ -5,7 +5,9 @@ package teacher
 
 import (
 	"context"
+	"encoding/json"
 
+	"teaching-backend/application/ai/rpc/pb"
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
 
@@ -18,7 +20,7 @@ type GenerateCoursewareLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
-// AI 生成章节课件 - 异步
+// AI 生成课件内容 - 异步
 func NewGenerateCoursewareLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenerateCoursewareLogic {
 	return &GenerateCoursewareLogic{
 		Logger: logx.WithContext(ctx),
@@ -28,7 +30,20 @@ func NewGenerateCoursewareLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *GenerateCoursewareLogic) GenerateCourseware(req *types.GenerateCoursewareReq) (resp *types.GenerateTaskRes, err error) {
-	// todo: add your logic here and delete this line
+	userId, _ := l.ctx.Value("userId").(json.Number).Int64()
 
-	return
+	rpcRes, err := l.svcCtx.AiRPC.GenerateCourseware(l.ctx, &pb.GenerateCoursewareReq{
+		ChapterId:    req.ChapterId,
+		Requirements: req.Requirements,
+		UserId:       userId,
+		SessionId:    req.SessionId,
+	})
+	if err != nil {
+		l.Errorf("GenerateCourseware rpc error: %v", err)
+		return nil, err
+	}
+
+	return &types.GenerateTaskRes{
+		TaskId: rpcRes.TaskId,
+	}, nil
 }

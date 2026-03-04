@@ -5,6 +5,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	ai "teaching-backend/application/applet/api/internal/handler/ai"
 	chapter "teaching-backend/application/applet/api/internal/handler/chapter"
@@ -35,6 +36,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		},
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/v1"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 智能助教流式问答 SSE
+				Method:  http.MethodGet,
+				Path:    "/ai/ask/stream",
+				Handler: ai.AskQuestionStreamHandler(serverCtx),
+			},
+		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/v1"),
+		rest.WithTimeout(0*time.Nanosecond),
+		rest.WithSSE(),
 	)
 
 	server.AddRoutes(
@@ -354,6 +370,24 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/v1"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.CheckTeacherRole},
+			[]rest.Route{
+				{
+					// AI 课件流式生成 SSE
+					Method:  http.MethodPost,
+					Path:    "/ai/generate-courseware-stream",
+					Handler: teacher.GenerateCoursewareStreamHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/v1"),
+		rest.WithTimeout(0*time.Nanosecond),
+		rest.WithSSE(),
 	)
 
 	server.AddRoutes(

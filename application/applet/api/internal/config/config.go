@@ -21,6 +21,7 @@ type Config struct {
 	UserRPC            zrpc.RpcClientConf
 	CourseRPC          zrpc.RpcClientConf
 	ExamRPC            zrpc.RpcClientConf
+	AiRPC              zrpc.RpcClientConf
 	BizRedis           redis.RedisConf
 	StudyProgressKafka struct {
 		Brokers []string

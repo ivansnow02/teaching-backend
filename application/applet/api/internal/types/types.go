@@ -16,13 +16,21 @@ type AnswerItem struct {
 }
 
 type AskQuestionReq struct {
-	CourseId int64  `json:"course_id"`
-	Question string `json:"question"`
+	CourseId  int64  `json:"course_id"`
+	Question  string `json:"question"`
+	SessionId string `json:"session_id,optional"` // 多轮对话标识；首轮不传
 }
 
 type AskQuestionRes struct {
 	Answer  string   `json:"answer"`
 	Sources []string `json:"sources"`
+}
+
+type AskQuestionStreamRes struct {
+	Delta     string   `json:"delta"`
+	Sources   []string `json:"sources,omitempty"`
+	Finished  bool     `json:"finished"`
+	SessionId string   `json:"session_id,omitempty"` // 首帧返回，客户端保存用于后续多轮
 }
 
 type ChapterItem struct {
@@ -253,6 +261,13 @@ type GenerateCourseOutlineReq struct {
 type GenerateCoursewareReq struct {
 	ChapterId    int64  `json:"chapter_id"`
 	Requirements string `json:"requirements"`
+	SessionId    string `json:"session_id,optional"` // 多轮对话标识；首轮不传
+}
+
+type GenerateCoursewareStreamRes struct {
+	Delta     string `json:"delta"`
+	Finished  bool   `json:"finished"`
+	SessionId string `json:"session_id,omitempty"` // 首帧返回，客户端保存用于后续多轮
 }
 
 type GenerateQuestionsReq struct {

@@ -25,6 +25,12 @@ ExamRPC:
       - 127.0.0.1:2379
     Key: exam.rpc
   NonBlock: true
+AiRPC:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: ai.rpc
+  NonBlock: true
 BizRedis:
   Host: 127.0.0.1:6379
   Pass:

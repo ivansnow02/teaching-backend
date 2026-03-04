@@ -1,0 +1,9 @@
+Name: ai.rpc
+ListenOn: 0.0.0.0:9004
+Etcd:
+  Hosts:
+    - 127.0.0.1:2379
+  Key: ai.rpc
+AgentRpc:
+  Target: dns:///127.0.0.1:50052
+  NonBlock: true

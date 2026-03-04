@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package agent;
+option go_package = "./agentpb";
+
+// AgentService — Python AI Agent 对外暴露的 gRPC 服务
+// 由 Go 侧 AI Bridge 作为 gRPC Client 调用
+service AgentService {
+    // ========== 判卷 ==========
+  rpc GradeSubjective(GradeSubjectiveReq) returns(GradeSubjectiveRes);
+
+    // ========== 课件向量化 ==========
+  rpc EmbedMaterial(EmbedMaterialReq) returns(EmbedMaterialRes);
+  rpc GetEmbedStatus(GetEmbedStatusReq) returns(GetEmbedStatusRes);
+
+    // ========== 智能助教 RAG ==========
+  rpc AskQuestion(AskQuestionReq) returns(AskQuestionRes);
+    // 流式回答 (SSE 打字机效果)，支持多轮对话（携带 session_id）
+  rpc AskQuestionStream(AskQuestionReq) returns(stream StreamDelta);
+
+    // ========== 智能生成 (异步 task_id 模式) ==========
+  rpc GenerateQuestions(GenerateQuestionsReq) returns(GenerateTaskRes);
+  rpc GenerateCourseOutline(GenerateCourseOutlineReq) returns(GenerateTaskRes);
+  rpc GenerateCourseware(GenerateCoursewareReq) returns(GenerateTaskRes);
+    // 流式生成课件 Markdown，支持多轮对话（携带 session_id）
+  rpc GenerateCoursewareStream(GenerateCoursewareReq) returns(stream StreamDelta);
+  rpc GetTaskStatus(GetTaskStatusReq) returns(GetTaskStatusRes);
+}
+
+// 通用流式增量消息体 (AskQuestionStream 和 GenerateCoursewareStream 共用)
+message StreamDelta {
+  string delta = 1; // 增量文本片段
+  repeated string sources = 2; // 引用来源 (RAG 场景最后一帧携带)
+  bool finished = 3; // 是否是最后一帧
+  string session_id = 4; // 首帧返回，供客户端后续多轮使用
+}
+
+// ============ 判卷 ============
+
+message GradeSubjectiveReq {
+  int64 record_id = 1;
+  int64 question_id = 2;
+  string question_content = 3;
+  string standard_answer = 4;
+  string knowledge_points = 5;
+  string user_answer = 6;
+  string max_score = 7;
+}
+
+message GradeSubjectiveRes {
+  int64 question_id = 1;
+  string score = 2;
+  int32 is_correct = 3; // 0:错误 1:正确 2:部分得分
+  string ai_comment = 4;
+}
+
+// ============ 课件向量化 ============
+
+message EmbedMaterialReq {
+  int64 material_id = 1;
+  int64 course_id = 2;
+  string title = 3;
+  string url = 4;
+  int32 type = 5; // 2:PDF 3:文档
+}
+
+message EmbedMaterialRes {
+  bool accepted = 1;
+  string task_id = 2; // 异步任务 ID，可通过 GetEmbedStatus 查询进度
+}
+
+message GetEmbedStatusReq {
+  int64 material_id = 1;
+}
+
+message GetEmbedStatusRes {
+  int32 ai_status = 1; // 0:未处理 1:处理中 2:已完成 3:失败
+  string message = 2;
+}
+
+// ============ 智能助教 RAG ============
+
+message AskQuestionReq {
+  int64 course_id = 1;
+  int64 user_id = 2;
+  string question = 3;
+  repeated string history = 4;
+  string session_id = 5; // 多轮对话标识；为空则服务端新建会话并在首帧 StreamDelta 中返回
+}
+
+message AskQuestionRes {
+  string answer = 1;
+  repeated string sources = 2;
+}
+
+// ============ 智能生成 ============
+
+message GenerateQuestionsReq {
+  int64 course_id = 1;
+  string knowledge_points = 2;
+  int32 count = 3;
+  int32 type = 4;
+  int32 difficulty = 5;
+}
+
+message GenerateCourseOutlineReq {
+  int64 course_id = 1;
+  string topic = 2;
+  string requirements = 3;
+}
+
+message GenerateCoursewareReq {
+  int64 chapter_id = 1;
+  string requirements = 2;
+  int64 user_id = 3; // 用于 session 隔离
+  string session_id = 4; // 多轮对话标识；为空则服务端新建会话并在首帧 StreamDelta 中返回
+}
+
+message GenerateTaskRes {
+  string task_id = 1;
+}
+
+message GetTaskStatusReq {
+  string task_id = 1;
+}
+
+message GetTaskStatusRes {
+  int32 status = 1; // 0:处理中 1:已完成 2:失败
+  string result = 2;
+  string message = 3;
+}

@@ -45,6 +45,10 @@
                 },
                 "question": {
                   "type": "string"
+                },
+                "session_id": {
+                  "description": "多轮对话标识；首轮不传",
+                  "type": "string"
                 }
               }
             }
@@ -57,6 +61,70 @@
               "type": "object",
               "properties": {
                 "answer": {
+                  "type": "string"
+                },
+                "sources": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/ask/stream": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "智能助教流式问答 SSE",
+        "operationId": "aiAskQuestionStream",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "course_id",
+                "question"
+              ],
+              "properties": {
+                "course_id": {
+                  "type": "integer"
+                },
+                "question": {
+                  "type": "string"
+                },
+                "session_id": {
+                  "description": "多轮对话标识；首轮不传",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "delta": {
+                  "type": "string"
+                },
+                "finished": {
+                  "type": "boolean"
+                },
+                "session_id": {
+                  "description": "首帧返回，客户端保存用于后续多轮",
                   "type": "string"
                 },
                 "sources": {
@@ -101,6 +169,10 @@
                 },
                 "requirements": {
                   "type": "string"
+                },
+                "session_id": {
+                  "description": "多轮对话标识；首轮不传",
+                  "type": "string"
                 }
               }
             }
@@ -113,6 +185,67 @@
               "type": "object",
               "properties": {
                 "task_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ai/generate-courseware-stream": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "summary": "AI 课件流式生成 SSE",
+        "operationId": "teacherGenerateCoursewareStream",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "chapter_id",
+                "requirements"
+              ],
+              "properties": {
+                "chapter_id": {
+                  "type": "integer"
+                },
+                "requirements": {
+                  "type": "string"
+                },
+                "session_id": {
+                  "description": "多轮对话标识；首轮不传",
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "delta": {
+                  "type": "string"
+                },
+                "finished": {
+                  "type": "boolean"
+                },
+                "session_id": {
+                  "description": "首帧返回，客户端保存用于后续多轮",
                   "type": "string"
                 }
               }
@@ -2889,7 +3022,7 @@
       }
     }
   },
-  "x-date": "2026-03-03 10:57:41",
+  "x-date": "2026-03-04 12:33:27",
   "x-description": "This is a goctl generated swagger file.",
   "x-github": "https://github.com/zeromicro/go-zero",
   "x-go-zero-doc": "https://go-zero.dev/",

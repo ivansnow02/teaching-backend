@@ -6,6 +6,7 @@ package teacher
 import (
 	"context"
 
+	"teaching-backend/application/ai/rpc/pb"
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
 
@@ -18,7 +19,7 @@ type GenerateQuestionsLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
-// AI 智能出题 (基于知识点) - 异步
+// AI 智能出题 - 异步
 func NewGenerateQuestionsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GenerateQuestionsLogic {
 	return &GenerateQuestionsLogic{
 		Logger: logx.WithContext(ctx),
@@ -28,7 +29,19 @@ func NewGenerateQuestionsLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *GenerateQuestionsLogic) GenerateQuestions(req *types.GenerateQuestionsReq) (resp *types.GenerateTaskRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcRes, err := l.svcCtx.AiRPC.GenerateQuestions(l.ctx, &pb.GenerateQuestionsReq{
+		CourseId:        req.CourseId,
+		KnowledgePoints: req.KnowledgePoints,
+		Count:           int32(req.Count),
+		Type:            int32(req.Type),
+		Difficulty:      int32(req.Difficulty),
+	})
+	if err != nil {
+		l.Errorf("GenerateQuestions rpc error: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.GenerateTaskRes{
+		TaskId: rpcRes.TaskId,
+	}, nil
 }

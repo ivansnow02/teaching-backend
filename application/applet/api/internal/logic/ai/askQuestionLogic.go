@@ -5,7 +5,9 @@ package ai
 
 import (
 	"context"
+	"encoding/json"
 
+	"teaching-backend/application/ai/rpc/pb"
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
 
@@ -28,7 +30,21 @@ func NewAskQuestionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *AskQu
 }
 
 func (l *AskQuestionLogic) AskQuestion(req *types.AskQuestionReq) (resp *types.AskQuestionRes, err error) {
-	// todo: add your logic here and delete this line
+	userId, _ := l.ctx.Value("userId").(json.Number).Int64()
 
-	return
+	rpcRes, err := l.svcCtx.AiRPC.AskQuestion(l.ctx, &pb.AskQuestionReq{
+		CourseId:  req.CourseId,
+		UserId:    userId,
+		Question:  req.Question,
+		SessionId: req.SessionId,
+	})
+	if err != nil {
+		l.Errorf("AskQuestion rpc error: %v", err)
+		return nil, err
+	}
+
+	return &types.AskQuestionRes{
+		Answer:  rpcRes.Answer,
+		Sources: rpcRes.Sources,
+	}, nil
 }

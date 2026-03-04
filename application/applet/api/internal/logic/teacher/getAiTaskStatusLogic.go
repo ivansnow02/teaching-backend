@@ -6,6 +6,7 @@ package teacher
 import (
 	"context"
 
+	"teaching-backend/application/ai/rpc/pb"
 	"teaching-backend/application/applet/api/internal/svc"
 	"teaching-backend/application/applet/api/internal/types"
 
@@ -18,7 +19,7 @@ type GetAiTaskStatusLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
-// 查询 AI 异步生成任务状态
+// 查询 AI 异步任务状态
 func NewGetAiTaskStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetAiTaskStatusLogic {
 	return &GetAiTaskStatusLogic{
 		Logger: logx.WithContext(ctx),
@@ -28,7 +29,17 @@ func NewGetAiTaskStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetAiTaskStatusLogic) GetAiTaskStatus(req *types.GetAiTaskStatusReq) (resp *types.GetAiTaskStatusRes, err error) {
-	// todo: add your logic here and delete this line
+	rpcRes, err := l.svcCtx.AiRPC.GetAiTaskStatus(l.ctx, &pb.GetAiTaskStatusReq{
+		TaskId: req.TaskId,
+	})
+	if err != nil {
+		l.Errorf("GetAiTaskStatus rpc error: %v", err)
+		return nil, err
+	}
 
-	return
+	return &types.GetAiTaskStatusRes{
+		Status:  int(rpcRes.Status),
+		Result:  rpcRes.Result,
+		Message: rpcRes.Message,
+	}, nil
 }

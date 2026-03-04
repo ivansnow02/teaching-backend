@@ -475,13 +475,29 @@ type SaveAnswerSnapshotReq {
 
 // ---------- AI 智能助教 ----------
 type AskQuestionReq {
-	CourseId int64  `json:"course_id"`
-	Question string `json:"question"`
+	CourseId  int64  `json:"course_id"`
+	Question  string `json:"question"`
+	SessionId string `json:"session_id,optional"` // 多轮对话标识；首轮不传
 }
 
 type AskQuestionRes {
 	Answer  string   `json:"answer"`
 	Sources []string `json:"sources"`
+}
+
+// SSE 流式问答每帧数据
+type AskQuestionStreamRes {
+	Delta     string   `json:"delta"`
+	Sources   []string `json:"sources,omitempty"`
+	Finished  bool     `json:"finished"`
+	SessionId string   `json:"session_id,omitempty"` // 首帧返回，客户端保存用于后续多轮
+}
+
+// SSE 流式课件生成每帧数据
+type GenerateCoursewareStreamRes {
+	Delta     string `json:"delta"`
+	Finished  bool   `json:"finished"`
+	SessionId string `json:"session_id,omitempty"` // 首帧返回，客户端保存用于后续多轮
 }
 
 type GenerateQuestionsReq {
@@ -501,6 +517,7 @@ type GenerateCourseOutlineReq {
 type GenerateCoursewareReq {
 	ChapterId    int64  `json:"chapter_id"`
 	Requirements string `json:"requirements"`
+	SessionId    string `json:"session_id,optional"` // 多轮对话标识；首轮不传
 }
 
 // 异步任务响应
@@ -711,6 +728,20 @@ service applet-api {
 	post /ai/ask (AskQuestionReq) returns (AskQuestionRes)
 }
 
+// ---------- AI 流式接口 (SSE, 学生可用) ----------
+@server (
+	jwt:     Auth
+	prefix:  /v1
+	group:   ai
+	sse:     true
+	timeout: 0
+)
+service applet-api {
+	@doc "智能助教流式问答 SSE"
+	@handler AskQuestionStream
+	get /ai/ask/stream (AskQuestionReq) returns (AskQuestionStreamRes)
+}
+
 // ---------- 教师专属操作 (需鉴权 + 角色中间件) ----------
 @server (
 	jwt:        Auth
@@ -802,5 +833,20 @@ service applet-api {
 	@doc "查看课程已选学生列表(教师)"
 	@handler CourseStudents
 	get /course/students (CourseStudentsReq) returns (CourseStudentsRes)
+}
+
+// ---------- AI 课件流式生成 SSE (教师可用) ----------
+@server (
+	jwt:        Auth
+	middleware: CheckTeacherRole
+	prefix:     /v1
+	group:      teacher
+	sse:        true
+	timeout:    0
+)
+service applet-api {
+	@doc "AI 课件流式生成 SSE"
+	@handler GenerateCoursewareStream
+	post /ai/generate-courseware-stream (GenerateCoursewareReq) returns (GenerateCoursewareStreamRes)
 }
 
