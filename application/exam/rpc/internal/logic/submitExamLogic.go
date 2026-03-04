@@ -87,7 +87,11 @@ func (l *SubmitExamLogic) SubmitExam(in *pb.SubmitExamReq) (*pb.SubmitExamRes, e
 	// 预更新记录状态为“处理中/批改中”
 	record.Status = 1 // 1=待批改/处理中
 	record.SubmitTime = sql.NullTime{Time: time.Now(), Valid: true}
-	_ = l.svcCtx.UserExamRecordModel.Update(l.ctx, record)
+	err = l.svcCtx.UserExamRecordModel.Update(l.ctx, record)
+	if err != nil {
+		l.Errorf("Update UserExamRecord Status error: %v", err)
+		// 注意：此处推送成功但更新 DB 失败，面试常考！
+	}
 
 	// 清理快照
 	_, _ = l.svcCtx.BizRedis.DelCtx(l.ctx, key)
